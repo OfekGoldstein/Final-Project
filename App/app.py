@@ -1,13 +1,14 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, session, redirect, url_for
 from pymongo import MongoClient
 import json
 import os
+import bcrypt
 
 app = Flask(__name__)
 
 # MongoDB connection setup
-client = MongoClient('mongodb://localhost:27017/')
-db = client['Final_Project']  # Replace with your database name
+client = MongoClient('mongodb://root:Mpg3o9TbNX@localhost:27017/')  # Replace with your credentials
+db = client['Final_Project']
 users_collection = db['users']
 planets_collection = db['planets']
 votes_collection = db['votes']
@@ -17,93 +18,100 @@ planets_file = os.path.join(os.path.dirname(__file__), 'planets.json')
 with open(planets_file, 'r') as f:
     planets_data = json.load(f)
 
+# Initialize the planets collection if empty
+if planets_collection.count_documents({}) == 0:
+    planets_collection.insert_many(planets_data)
+
 # Routes
 @app.route('/')
 def index():
+    if 'username' in session:
+        return redirect(url_for('planets'))
     return render_template('index.html')
 
 @app.route('/planets')
 def planets():
-    return render_template('planets.html', planets=planets_data)
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    planets = list(planets_collection.find({}))
+    return render_template('planets.html', planets=planets)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password'].encode('utf-8')
+
+        if not username or not password:
+            return "Username and password are required", 400
+
+        existing_user = users_collection.find_one({'username': username})
+        if existing_user:
+            return "Username already exists", 400
+
+        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+        users_collection.insert_one({'username': username, 'password': hashed_password})
+        return redirect(url_for('index'))
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password'].encode('utf-8')
+
+        user = users_collection.find_one({'username': username})
+        if user and bcrypt.checkpw(password, user['password']):
+            session['username'] = username
+            return redirect(url_for('planets'))
+        return "Invalid username or password", 400
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('index'))
 
 @app.route('/vote', methods=['GET', 'POST'])
 def vote():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    
     if request.method == 'GET':
-        return render_template('vote.html', planets=planets_data)
+        planets = list(planets_collection.find({}))
+        return render_template('vote.html', planets=planets)
     elif request.method == 'POST':
-        try:
-            data = request.json
-            planet_name = data.get('planet_name')
+        data = request.form
+        planet_name = data.get('planet_name')
+        comment = data.get('comment')
 
-            if not planet_name:
-                return jsonify({"error": "Planet name not provided in request body"}), 400
+        if not planet_name:
+            return jsonify({"error": "Planet name not provided"}), 400
 
-            planet = next((planet for planet in planets_data if planet['name'].lower() == planet_name.lower()), None)
-            if planet:
-                # Increment vote in MongoDB
-                result = votes_collection.update_one({'planet_name': planet_name}, {'$inc': {'votes': 1}}, upsert=True)
-                if result.modified_count == 0 and result.upserted_id is None:
-                    return jsonify({"error": "Failed to update votes"}), 500
-
-                return jsonify({"message": f"Voted for {planet_name}"}), 200
-            else:
-                return jsonify({"error": "Planet not found"}), 404
-
-        except Exception as e:
-            print(f"Exception occurred: {str(e)}")
-            return jsonify({"error": "Internal Server Error"}), 500
+        planet = planets_collection.find_one({'name': planet_name})
+        if planet:
+            votes_collection.update_one(
+                {'planet_name': planet_name},
+                {'$inc': {'votes': 1}, '$push': {'comments': comment}},
+                upsert=True
+            )
+            return jsonify({"message": f"Voted for {planet_name}"}), 200
+        else:
+            return jsonify({"error": "Planet not found"}), 404
 
 # API endpoints for JSON data
 @app.route('/api/planets', methods=['GET'])
 def get_planets_api():
-    return jsonify(planets_data)
+    planets = list(planets_collection.find({}, {'_id': 0}))
+    return jsonify(planets)
 
 @app.route('/api/planet/<name>', methods=['GET'])
 def get_planet_api(name):
-    planet = next((planet for planet in planets_data if planet['name'].lower() == name.lower()), None)
+    planet = planets_collection.find_one({'name': name}, {'_id': 0})
     if planet:
         return jsonify(planet)
     else:
         return jsonify({"error": "Planet not found"}), 404
-
-# User registration and authentication
-@app.route('/register', methods=['POST'])
-def register():
-    data = request.json
-    username = data.get('username')
-    password = data.get('password')
-
-    if not username or not password:
-        return jsonify({"error": "Username and password are required"}), 400
-
-    # Check if user already exists
-    existing_user = users_collection.find_one({'username': username})
-    if existing_user:
-        return jsonify({"error": "Username already exists"}), 400
-
-    # Insert new user into MongoDB
-    result = users_collection.insert_one({'username': username, 'password': password})
-    if result.inserted_id:
-        return jsonify({"message": "User registered successfully"}), 201
-    else:
-        return jsonify({"error": "Failed to register user"}), 500
-
-# Voting comment storage
-@app.route('/comment', methods=['POST'])
-def comment():
-    data = request.json
-    planet_name = data.get('planet_name')
-    comment = data.get('comment')
-
-    if not planet_name or not comment:
-        return jsonify({"error": "Planet name and comment are required"}), 400
-
-    # Store comment in MongoDB
-    result = votes_collection.update_one({'planet_name': planet_name}, {'$set': {'comment': comment}}, upsert=True)
-    if result.modified_count == 0 and result.upserted_id is None:
-        return jsonify({"error": "Failed to store comment"}), 500
-
-    return jsonify({"message": "Comment stored successfully"}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
