@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, render_template, session, redirect, u
 from pymongo import MongoClient
 import json
 import os
+import bcrypt
 
 app = Flask(__name__)
 
