@@ -19,5 +19,4 @@ how to access the mongodb via cli: mongosh -u root -p ieWne5HG2P --authenticatio
 
 
 vote איפה עצרתי: הבעיה כרגע היא שכשעושים
-compass-עדיין מקבלים שגיאה. השאר כרגע עובד, ה
-עדיין לא
+עדיין מקבלים שגיאה. השאר כרגע עובד, לעזוב את הקומפססססס
