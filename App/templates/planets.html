@@ -44,6 +44,21 @@
         .planet:hover .tooltip {
             display: block;
         }
+        .vote-button {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .vote-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -157,6 +172,8 @@
                 Description: {{ planets[8]['Description'] }}
             </div>
         </div>
+        <!-- Add the Vote button here -->
+        <button class="vote-button" onclick="window.location.href='/vote'">Vote for a Planet</button>
     </div>
     <script>
         // JavaScript to dynamically add stars to the background
