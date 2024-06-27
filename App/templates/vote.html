@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote for Your Favorite Planet</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Vote for Your Favorite Planet</h1>
+    <form action="/vote" method="post">
+        <label for="planet">Select a planet:</label>
+        <select id="planet" name="planet_name">
+            {% for planet in planets %}
+                <option value="{{ planet.name }}">{{ planet.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Vote</button>
+    </form>
+    <div>
+        <button onclick="window.location.href='/planets'">Back to Planets Information</button>
+    </div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+jenkins password: thvs3EEfWztwNRBJUegqef
+
+Grafana password: F63GAxw89P2kU13VRVvtXcLMQcLdj171BtF4NOrt
+
+mongoDB password: TnbHdvxGJt
+
+how to access Jenkins via the internet: kubectl port-forward jenkins-0 8080:8080
+
+how to change between namspaces: kubectl config set-context --current --namespace=<namespace-name>
+
+argocd password: runqurpWtJdXusG0
+
+how to change the svc type (no need for port-forwarding): kubectl patch svc prometheus-server --type='json' -p='[{"op": "replace", "path": "/spec/type", "value": "LoadBalancer"},
+    {"op": "replace", "path": "/spec/ports", "value": [{"port": 9090, "targetPort": 9090, "protocol": "TCP"}]}
+]'
+
+how to access the mongodb via cli: mongosh -u root -p TnbHdvxGJt --authenticationDatabase admin
+
+
+
+
+mongo_user = os.environ.get('MONGO_USER')
+mongo_password = os.environ.get('MONGO_PASSWORD')
