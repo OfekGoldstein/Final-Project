@@ -4,7 +4,7 @@
   },
   "Name": "Sun",
   "Materials": "Primarily hydrogen (~74%) and helium (~24%), with trace amounts of heavier elements",
-  "Diameter": "1,391,000 Kilometers",
+  "Size": "1,391,000 Kilometers",
   "Mass": "1.989 x 10^30 Kilograms",
   "Average Distance from the Center of the Galaxy": "~27,000 light years",
   "Average Surface Temperature": "5,500 Degrees Celsius",
@@ -77,7 +77,7 @@
   "Name": "Saturn",
   "Materials": "Similar to Jupiter, Saturn is a gas giant primarily composed of hydrogen and helium, with a core of rock and metallic hydrogen",
   "Size": "120,500 Kilometers",
-  "Mass": "5.69 x 10^26",
+  "Mass": "5.69 x 10^26 Kilograms",
   "Average Distance from the Sun": "~1,400,000,000 Kilometers",
   "Average Surface Temperature": "-178 degrees Celsius",
   "Description": "Known for its marvelous Rings and having the most Moons in our solar system, Saturn was named after the ancient Roman god of time, wealth and agriculture"

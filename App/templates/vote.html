@@ -4,122 +4,154 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vote for Your Favorite Planet</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> <!-- Link to your CSS file -->
     <style>
-        /* Additional inline styles specific to this page */
         body {
-            margin: 0;
-            padding: 0;
+            background-color: black;
+            color: white;
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            color: #333; /* Text color */
+            margin: 20px;
         }
         .container {
             max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: auto;
         }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #007bff; /* Heading color */
-        }
-        .planet-list {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        .planet-item {
+        .planet-info {
             margin-bottom: 20px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        .planet-name {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: #333; /* Planet name color */
-        }
-        .planet-description {
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: #555; /* Description text color */
+        .planet-info h2 {
+            color: yellow; /* Change color for planet names */
         }
         .vote-form {
             margin-top: 20px;
         }
         .vote-form label {
             display: block;
-            margin-bottom: 5px;
-            color: #333; /* Form label color */
+            margin-bottom: 10px;
         }
         .vote-form select {
-            width: 100%;
-            padding: 8px;
+            padding: 10px;
             font-size: 16px;
+            width: 100%;
             margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            color: #333; /* Dropdown text color */
         }
         .vote-form textarea {
-            width: 100%;
-            padding: 8px;
+            padding: 10px;
             font-size: 16px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            resize: vertical; /* Allow vertical resizing */
-            min-height: 100px; /* Set a minimum height */
-            color: #333; /* Textarea text color */
+            width: 100%;
+            height: 100px;
+            margin-bottom: 20px;
         }
-        .vote-form input[type="submit"] {
-            background-color: #007bff;
+        .vote-form button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
+        }
+        .vote-form button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Vote for Your Favorite Planet</h1>
-
-        <div class="planet-list">
-            {% for planet in planets %}
-            <div class="planet-item">
-                <div class="planet-name">{{ planet.name }}</div>
-                <div class="planet-description">
-                    Materials: {{ planet.Materials }}<br>
-                    Size: {{ planet.Size }}<br>
-                    Mass: {{ planet.Mass }}<br>
-                    Average Distance from the Sun: {{ planet.Average_Distance_from_the_Sun }}<br>
-                    Average Surface Temperature: {{ planet.Average_Surface_Temperature }}<br>
-                    Description: {{ planet.Description }}
-                </div>
-            </div>
-            {% endfor %}
+        <div class="planet-info">
+            <h2>Mercury</h2>
+            <p>Materials: Large iron Core, which makes up about 70% of its total mass, and a relatively thin silicate mantle and crust</p>
+            <p>Size: 2440 Kilometers</p>
+            <p>Mass: 3.3 x 10^23 Kilograms</p>
+            <p>Average Distance from the Sun: ~58,000,000 Kilometers</p>
+            <p>Average Surface Temperature: 167 Degrees Celsius</p>
+            <p>Description: Closest planet to the sun and smallest in our solar system, Mercury was named after the ancient Roman god of Commerce and Communication, Mercurius</p>
+        </div>
+        
+        <div class="planet-info">
+            <h2>Venus</h2>
+            <p>Materials: Crust made mostly of basaltic rock and a Core likely composed of iron and nickel</p>
+            <p>Size: 12,104 Kilometers</p>
+            <p>Mass: 4.87 x 10^24 Kilograms</p>
+            <p>Average Distance from the Sun: ~108,000,000 Kilometers</p>
+            <p>Average Surface Temperature: 465 degrees Celsius</p>
+            <p>Description: Hottest planet in our solar system and similiar in size and weight to planet Earth, Venus was named after the ancient Roman goddess of Love, Venus</p>
         </div>
 
+        <div class="planet-info">
+            <h2>Earth</h2>
+            <p>Materials: Crust primarily composed of silicate minerals, such as quartz and feldspar, and its Core is mainly iron and nickel</p>
+            <p>Size: 12,760 Kilometers</p>
+            <p>Mass: 5.97 x 10^24 Kilograms</p>
+            <p>Average Distance from the Sun: ~149,000,000 Kilometers</p>
+            <p>Average Surface Temperature: 15 degrees Celsius</p>
+            <p>Description: Planet of life, the name Earth was taken from old English and Germanic, which means 'the ground'</p>
+        </div>
+
+        <div class="planet-info">
+            <h2>Mars</h2>
+            <p>Materials: Crust made of basaltic rock and a Core that is likely composed of iron, nickel, and sulfur</p>
+            <p>Size: 6779 Kilometers</p>
+            <p>Mass: 6.42 x 10^23 Kilograms</p>
+            <p>Average Distance from the Sun: ~228,000,000 Kilometers</p>
+            <p>Average Surface Temperature: -60 degrees Celsius</p>
+            <p>Description: The Red planet, Mars was named after the ancient Roman god of war, Mars</p>
+        </div>
+
+        <div class="planet-info">
+            <h2>Jupiter</h2>
+            <p>Materials: A gas giant with a composition primarily of hydrogen and helium and a Core that contains elements like rock and metallic hydrogen</p>
+            <p>Size: 142,984 Kilometers</p>
+            <p>Mass: 1.9 x 10^27 Kilograms</p>
+            <p>Average Distance from the Sun: ~778,000,000 Kilometers</p>
+            <p>Average Surface Temperature: -110 degrees Celsius</p>
+            <p>Description: Known for the Great Red Spot and being the Biggest planet in our solar system, Jupiter was named after the ancient Roman god of the sky and thunder, and king of the gods in ancient Roman religion, Jupiter</p>
+        </div>
+
+        <div class="planet-info">
+            <h2>Saturn</h2>
+            <p>Materials: Similar to Jupiter, Saturn is a gas giant primarily composed of hydrogen and helium, with a core of rock and metallic hydrogen</p>
+            <p>Size: 120,500 Kilometers</p>
+            <p>Mass: 5.69 x 10^26 Kilograms</p>
+            <p>Average Distance from the Sun: ~1,400,000,000 Kilometers</p>
+            <p>Average Surface Temperature: -178 degrees Celsius</p>
+            <p>Description: Known for its marvelous Rings and having the most Moons in our solar system, Saturn was named after the ancient Roman god of time, wealth and agriculture</p>
+        </div>
+
+        <div class="planet-info">
+            <h2>Uranus</h2>
+            <p>Materials: An ice giant with a composition that includes water, ammonia, and methane 'ices', as well as hydrogen and helium</p>
+            <p>Size: 51,118 Kilometers</p>
+            <p>Mass: 8.68 x 10^25 Kilograms</p>
+            <p>Average Distance from the Sun: ~2,900,000,000 Kilometers</p>
+            <p>Average Surface Temperature: -195 degrees Celsius</p>
+            <p>Description: rotating at a nearly 90-degree angle from the plane of its orbit, Uranus was named after the ancient Greek god of the sky, Uranus</p>
+        </div>
+
+        <div class="planet-info">
+            <h2>Neptune</h2>
+            <p>Materials: Neptune is an ice giant with a similar composition to Uranus, consisting of water, ammonia, and methane ices, along with hydrogen and helium</p>
+            <p>Size: 49,528 Kilometers</p>
+            <p>Mass: 1.02 x 10^26 Kilograms</p>
+            <p>Average Distance from the Sun: ~4,500,000,000 Kilometers</p>
+            <p>Average Surface Temperature: -214 degrees Celsius</p>
+            <p>Description: Being the Coldest and Farthest planet from the Sun, Neptune was named after the ancient Roman god of the sea, Neptune</p>
+        </div>
+        
         <form class="vote-form" action="/vote" method="POST">
-            <label for="planet_name">Select a planet:</label>
-            <select name="planet_name" id="planet_name">
-                {% for planet in planets %}
-                    <option value="{{ planet.name }}">{{ planet.name }}</option>
-                {% endfor %}
+            <label for="planet-select">Select a planet:</label>
+            <select id="planet-select" name="planet_name">
+                <option value="Venus">Venus</option>
+                <option value="Mercury">Mercury</option>
+                <option value="Earth">Earth</option>
+                <option value="Mars">Mars</option>
+                <option value="Jupiter">Jupiter</option>
+                <option value="Saturn">Saturn</option>
+                <option value="Uranus">Uranus</option>
+                <option value="Neptune">Neptune</option>
             </select>
-            <label for="comment">Why do you vote for this planet?</label>
-            <textarea name="comment" id="comment" rows="4"></textarea>
-            <input type="submit" value="Submit Vote">
+
+            <label for="reason">Why did you vote for this planet?</label>
+            <textarea id="reason" name="reason" required></textarea>
+
+            <button type="submit">Submit Vote</button>
         </form>
     </div>
 </body>
