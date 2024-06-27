@@ -2,7 +2,7 @@ jenkins password: thvs3EEfWztwNRBJUegqef
 
 Grafana password: F63GAxw89P2kU13VRVvtXcLMQcLdj171BtF4NOrt
 
-mongoDB password: TnbHdvxGJt
+mongoDB password: uRI3gviR7U
 
 how to access Jenkins via the internet: kubectl port-forward jenkins-0 8080:8080
 
@@ -18,6 +18,3 @@ how to access the mongodb via cli: mongosh -u root -p TnbHdvxGJt --authenticatio
 
 
 
-
-mongo_user = os.environ.get('MONGO_USER')
-mongo_password = os.environ.get('MONGO_PASSWORD')
