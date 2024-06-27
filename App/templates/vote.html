@@ -4,26 +4,116 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vote for Your Favorite Planet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> <!-- Link to your CSS file -->
     <style>
+        /* Additional inline styles specific to this page */
         body {
-            background-color: black;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .planet-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .planet-item {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .planet-name {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .planet-description {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .vote-form {
+            margin-top: 20px;
+        }
+        .vote-form label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .vote-form select {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .vote-form textarea {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            resize: vertical; /* Allow vertical resizing */
+            min-height: 100px; /* Set a minimum height */
+        }
+        .vote-form input[type="submit"] {
+            background-color: #007bff;
             color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
-    <h1>Vote for Your Favorite Planet</h1>
-    <form action="/vote" method="post">
-        <label for="planet">Select a planet:</label>
-        <select id="planet" name="planet_name">
+    <div class="container">
+        <h1>Vote for Your Favorite Planet</h1>
+
+        <div class="planet-list">
             {% for planet in planets %}
-                <option value="{{ planet.name }}">{{ planet.name }}</option>
+            <div class="planet-item">
+                <div class="planet-name">{{ planet.name }}</div>
+                <div class="planet-description">
+                    Materials: {{ planet.Materials }}<br>
+                    Size: {{ planet.Size }}<br>
+                    Mass: {{ planet.Mass }}<br>
+                    Average Distance from the Sun: {{ planet.Average_Distance_from_the_Sun }}<br>
+                    Average Surface Temperature: {{ planet.Average_Surface_Temperature }}<br>
+                    Description: {{ planet.Description }}
+                </div>
+            </div>
             {% endfor %}
-        </select>
-        <button type="submit">Vote</button>
-    </form>
-    <div>
-        <button onclick="window.location.href='/planets'">Back to Planets Information</button>
+        </div>
+
+        <form class="vote-form" action="/vote" method="POST">
+            <label for="planet_name">Select a planet:</label>
+            <select name="planet_name" id="planet_name">
+                {% for planet in planets %}
+                    <option value="{{ planet.name }}">{{ planet.name }}</option>
+                {% endfor %}
+            </select>
+            <label for="comment">Why do you vote for this planet?</label>
+            <textarea name="comment" id="comment" rows="4"></textarea>
+            <input type="submit" value="Submit Vote">
+        </form>
     </div>
 </body>
 </html>
