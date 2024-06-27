@@ -5,6 +5,7 @@ import os
 import bcrypt
 
 app = Flask(__name__)
+app.secret_key = 'zaza7531'
 
 # MongoDB connection setup
 client = MongoClient('mongodb://root:Mpg3o9TbNX@10.97.126.87:27017/Final_Project?authSource=admin')
