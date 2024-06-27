@@ -14,7 +14,7 @@ how to change the svc type (no need for port-forwarding): kubectl patch svc prom
     {"op": "replace", "path": "/spec/ports", "value": [{"port": 9090, "targetPort": 9090, "protocol": "TCP"}]}
 ]'
 
-how to access the mongodb via cli: mongosh -u root -p TnbHdvxGJt --authenticationDatabase admin
+how to access the mongodb via cli: mongosh -u root -p uRI3gviR7U --authenticationDatabase admin
 
 
 
