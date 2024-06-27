@@ -7,7 +7,7 @@ import bcrypt
 app = Flask(__name__)
 
 # MongoDB connection setup
-client = MongoClient('mongodb://root:Mpg3o9TbNX@localhost:27017/Final_Project?authSource=admin')
+client = MongoClient('mongodb://root:Mpg3o9TbNX@mongodb:27017/Final_Project')
 db = client['Final_Project']
 users_collection = db['users']
 planets_collection = db['planets']
