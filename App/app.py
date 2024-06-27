@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 
 # MongoDB connection setup
-client = MongoClient('mongodb://root:Mpg3o9TbNX@localhost:27017/')  # Replace with your credentials
+client = MongoClient('mongodb://root:Mpg3o9TbNX@localhost:27017/Final_Project')  # Replace with your credentials
 db = client['Final_Project']
 users_collection = db['users']
 planets_collection = db['planets']
