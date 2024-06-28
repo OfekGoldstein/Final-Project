@@ -52,18 +52,10 @@
         .vote-form button:hover {
             background-color: #45a049;
         }
-        .vote-success-message {
-            display: none; /* Hidden by default */
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            margin-top: 10px;
-        }
         .logout-button {
             position: absolute;
             top: 10px;
-            left: 10px;
+            left: 1030px; /* Adjusted for more rightward positioning */
             padding: 10px 20px;
             background-color: #f44336; /* Red color for logout button */
             color: white;
@@ -76,7 +68,7 @@
         .back-button {
             position: absolute;
             top: 10px;
-            right: 10px;
+            right: 1020px; /* Adjusted for more leftward positioning */
             padding: 10px 20px;
             background-color: #337ab7; /* Blue color for back button */
             color: white;
@@ -85,6 +77,17 @@
         }
         .back-button:hover {
             background-color: #286090; /* Darker blue on hover */
+        }
+        .message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
         }
     </style>
 </head>
@@ -186,7 +189,7 @@
         </div>
         
         <!-- Vote Form Section -->
-        <form class="vote-form" action="/vote" method="POST">
+        <form class="vote-form" id="vote-form" action="/vote" method="POST">
             <label for="planet-select">Select a planet:</label>
             <select id="planet-select" name="planet_name">
                 <option value="Mercury">Mercury</option>
@@ -205,37 +208,30 @@
             <button type="submit">Submit Vote</button>
         </form>
 
-        <!-- Success Message -->
-        <div id="vote-success" class="vote-success-message">
-            Vote received successfully!
-        </div>
+        <!-- Message Display -->
+        <div class="message" id="vote-message">Vote received successfully!</div>
     </div>
 
+    <!-- Script for displaying message after vote submission -->
     <script>
-        // Show success message after form submission
         document.addEventListener('DOMContentLoaded', () => {
-            const form = document.querySelector('.vote-form');
+            const voteForm = document.getElementById('vote-form');
+            const voteMessage = document.getElementById('vote-message');
 
-            form.addEventListener('submit', async (event) => {
+            voteForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
-                
-                const formData = new FormData(form);
+
+                const formData = new FormData(voteForm);
                 const response = await fetch('/vote', {
                     method: 'POST',
                     body: formData
                 });
 
                 if (response.ok) {
-                    const successMessage = document.getElementById('vote-success');
-                    successMessage.style.display = 'block';
-
-                    // Hide success message after 3 seconds (adjust as needed)
+                    voteMessage.style.display = 'block';
                     setTimeout(() => {
-                        successMessage.style.display = 'none';
-                    }, 3000);
-
-                    // Optionally redirect after showing the message
-                    // window.location.href = '/planets';
+                        voteMessage.style.display = 'none';
+                    }, 3000); // Hide message after 3 seconds
                 }
             });
         });
