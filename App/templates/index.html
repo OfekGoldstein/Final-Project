@@ -10,19 +10,35 @@
             background-color: black;
             color: white;
         }
+        .flash-message {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        .flash-message.error {
+            color: white;
+            background-color: #a94442;
+            border-color: #a94442;
+        }
+        .flash-message.success {
+            color: white;
+            background-color: #3c763d;
+            border-color: #3c763d;
+        }
     </style>
 </head>
 <body>
     <div>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+            {% for category, message in messages %}
+                <li class="flash-message {{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
     <h1>Welcome to the Solar System App</h1>
     <button onclick="window.location.href='/register'">Register</button>
     <button onclick="window.location.href='/login'">Login</button>

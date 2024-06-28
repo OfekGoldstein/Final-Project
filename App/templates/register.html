@@ -37,7 +37,6 @@
         <input type="password" id="password" name="password" required><br><br>
         <input type="submit" value="Register">
     </form>
-    
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <ul>
@@ -47,7 +46,6 @@
             </ul>
         {% endif %}
     {% endwith %}
-    
     <a href="{{ url_for('index') }}">Back to Home</a>
 </body>
 </html>
