@@ -16,6 +16,9 @@ how to change the svc type (no need for port-forwarding): kubectl patch svc prom
 
 how to access the mongodb via cli: mongosh -u root -p ieWne5HG2P --authenticationDatabase admin
 
+how to access the mongodb with Kubernetes: kubectl exec -it mongodb-5cb667c7c8-bf8v4 -- mongosh -u root -p ieWne5HG2P --aut
+henticationDatabase admin                          (the mongodb-5cb667c7c8-bf8v4 may change)
+
 
 
 vote איפה עצרתי: הבעיה כרגע היא שכשעושים
