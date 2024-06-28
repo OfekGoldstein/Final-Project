@@ -111,10 +111,11 @@ def vote():
                 'comment': comment,
                 'voter': session['username']
             })
-            flash("Thank you for your vote", 'success')
-            return redirect(url_for('planets'))
-        else:
-            return jsonify({"error": "Planet not found"}), 404
+            flash("Vote received successfully", 'success')
+    else:
+        flash("Planet not found", 'error')
+
+    return redirect(url_for('planets'))
 
 # API endpoints for JSON data
 @app.route('/api/planets', methods=['GET'])

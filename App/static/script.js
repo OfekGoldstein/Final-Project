@@ -43,7 +43,21 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(response => response.json())
         .then(data => {
-            alert(data.message);
+            // Display a success message
+            const flashMessage = document.createElement('div');
+            flashMessage.className = 'flash-message';
+            flashMessage.textContent = data.message;
+            document.body.appendChild(flashMessage);
+
+            // Remove the flash message after a few seconds (3000 ms)
+            setTimeout(() => {
+                flashMessage.remove();
+            }, 3000);
+
+            // Redirect to the /planets page after voting
+            setTimeout(() => {
+                window.location.href = '/planets';
+            }, 3000);
         });
     };
 });
