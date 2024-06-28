@@ -59,6 +59,23 @@
         .vote-button:hover {
             background-color: #45a049;
         }
+        .logout-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .logout-button {
+            padding: 10px 20px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .logout-button:hover {
+            background-color: #d32f2f;
+        }
     </style>
 </head>
 <body>
@@ -172,7 +189,12 @@
                 Description: {{ planets[8]['Description'] }}
             </div>
         </div>
-        <!-- Add the Vote button here -->
+        <!-- Logout button container -->
+        <div class="logout-container">
+            <button class="logout-button" onclick="window.location.href='/logout'">Logout</button>
+        </div>
+
+        <!-- Vote button remains at the bottom left -->
         <button class="vote-button" onclick="window.location.href='/vote'">Vote for a Planet</button>
     </div>
     <script>
