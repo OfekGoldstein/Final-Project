@@ -27,8 +27,10 @@ if planets_collection.count_documents({}) == 0:
 @app.route('/')
 def index():
     if 'username' in session:
-        return redirect(url_for('planets'))
-    return render_template('index.html')
+        messages = get_flashed_messages()
+        return render_template('index.html', messages=messages)
+    else:
+        return render_template('index.html')
 
 @app.route('/planets')
 def planets():
