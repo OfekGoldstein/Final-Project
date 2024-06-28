@@ -7,8 +7,6 @@ import bcrypt
 app = Flask(__name__)
 app.secret_key = 'zaza7531'
 
-planets = ["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"]
-
 # MongoDB connection setup
 client = MongoClient('mongodb://root:ieWne5HG2P@10.109.237.149:27017/Final_Project?authSource=admin')
 db = client['Final_Project']
@@ -102,6 +100,12 @@ def vote():
 
         if not planet_name:
             return jsonify({"error": "Planet name not provided"}), 400
+        
+        # Check if the user has already voted
+        existing_vote = votes_collection.find_one({'voter': session['username']})
+        if existing_vote:
+            flash("You have already voted", 'error')
+            return redirect(url_for('planets'))
 
         planet = planets_collection.find_one({'Name': planet_name})
         if planet:
