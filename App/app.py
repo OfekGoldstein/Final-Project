@@ -39,6 +39,12 @@ def planets():
     
     # If user hasn't voted, render the planets page
     planets = list(planets_collection.find({}))
+   
+   # Get vote counts for each planet
+    for planet in planets:
+        vote_count = votes_collection.count_documents({'planet_name': planet['Name']})
+        planet['vote_count'] = vote_count
+        
     return render_template('planets.html', planets=planets)
 
 @app.route('/register', methods=['GET', 'POST'])
