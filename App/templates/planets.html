@@ -92,8 +92,10 @@
     <div class="container">
         <!-- Sun and Planets -->
         <div class="planet" style="left: 38px; top: 21px;">
-            <img src="{{ url_for('static', filename='sun.png') }}" alt="Sun" width="199" height="199">
-            <div class="tooltip">
+            <a href="https://en.wikipedia.org/wiki/Sun" target="_blank">
+                <img src="{{ url_for('static', filename='sun.png') }}" alt="Sun" width="199" height="199">
+            </a>    
+                <div class="tooltip">
                 Sun<br>
                 Materials: {{ planets[0]['Materials'] }}<br>
                 Diameter: {{ planets[0]['Diameter'] }}<br>
