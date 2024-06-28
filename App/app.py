@@ -49,19 +49,13 @@ def register():
 
         hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
 
-        # Check if username exists
+        # Check if username exists with any password
         existing_user = users_collection.find_one({'username': username})
         if existing_user:
             flash("Username already exists", 'error')
             return redirect(url_for('register'))
 
-        # Check if hashed password exists
-        existing_password = users_collection.find_one({'password': hashed_password})
-        if existing_password:
-            flash("Password already exists", 'error')
-            return redirect(url_for('register'))
-
-        # If both username and password are unique, insert new user
+        # If username is unique or does not exist with this password, insert new user
         users_collection.insert_one({'username': username, 'password': hashed_password})
         flash("Registration successful", 'success')
         return redirect(url_for('index'))
