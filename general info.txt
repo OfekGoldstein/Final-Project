@@ -21,6 +21,35 @@ henticationDatabase admin                          (the mongodb-5cb667c7c8-bf8v4
 
 
 
+If your Kubernetes cluster is not deployed on a cloud provider, and you're seeing localhost as the external IP for your LoadBalancer type service, it typically means you are running a local or development Kubernetes cluster such as Minikube, Docker Desktop with Kubernetes, or kind (Kubernetes in Docker).
+
+Here’s how you can access your application from a different device in such a setup:
+
+Find the Cluster IP: Instead of an external IP, these local Kubernetes clusters often expose services via a Cluster IP. You can find this IP using the following command:
+
+kubectl get services
+Look for your service in the list and note the CLUSTER-IP.
+
+Port Forwarding (Optional): If accessing from a different device on the same local network, you might need to set up port forwarding from your local machine where Kubernetes is running. This allows incoming traffic on a specific port to be forwarded to the Kubernetes service.
+
+kubectl port-forward service/<your-service-name> <local-port>:<service-port>
+Replace <your-service-name> with the name of your service and adjust <local-port> and <service-port> as needed.
+
+Accessing from a Different Device:
+
+On the different device, use the IP address of the machine running Kubernetes (where kubectl commands are executed).
+Use the Cluster IP and port number to access your application. For example, http://<cluster-ip>:<port>.
+Firewall and Network Configuration:
+
+Ensure that your firewall settings on the machine running Kubernetes allow incoming traffic on the specified port.
+Check network configurations (like NAT settings) if you're accessing from a device outside the local network.
+Testing:
+
+Try accessing the application from a web browser on the different device using the Cluster IP and port number. For example, http://192.168.1.100:5000.
+By following these steps, you should be able to access your application deployed in a local Kubernetes cluster from a different device within the same network. Adjustments may be needed based on specific configurations and networking setup of your local Kubernetes environment.
+
+
+
 vote איפה עצרתי: הבעיה כרגע היא שכשעושים
 עדיין מקבלים שגיאה. השאר כרגע עובד, לעזוב את הקומפססססס
 צריך להוסיף אופציה של
