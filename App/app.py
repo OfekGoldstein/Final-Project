@@ -34,6 +34,13 @@ def index():
 def planets():
     if 'username' not in session:
         return redirect(url_for('index'))
+    
+# Check if the user has already voted
+    user_voted = votes_collection.find_one({'voter': session['username']})
+    if user_voted:
+        flash("Sorry, but you already voted", 'error')
+        return redirect(url_for('index'))
+    
     planets = list(planets_collection.find({}))
     return render_template('planets.html', planets=planets)
 
@@ -100,12 +107,6 @@ def vote():
 
         if not planet_name:
             return jsonify({"error": "Planet name not provided"}), 400
-        
-        # Check if the user has already voted
-        existing_vote = votes_collection.find_one({'voter': session['username']})
-        if existing_vote:
-            flash("You have already voted", 'error')
-            return redirect(url_for('planets'))
 
         planet = planets_collection.find_one({'Name': planet_name})
         if planet:
