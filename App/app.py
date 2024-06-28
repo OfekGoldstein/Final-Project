@@ -7,6 +7,8 @@ import bcrypt
 app = Flask(__name__)
 app.secret_key = 'zaza7531'
 
+planets = ["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"]
+
 # MongoDB connection setup
 client = MongoClient('mongodb://root:ieWne5HG2P@10.109.237.149:27017/Final_Project?authSource=admin')
 db = client['Final_Project']
@@ -91,7 +93,6 @@ def vote():
         return redirect(url_for('index'))
     
     if request.method == 'GET':
-        planets = list(planets_collection.find({}))
         return render_template('vote.html', planets=planets)
     elif request.method == 'POST':
         data = request.form
