@@ -44,14 +44,17 @@ def register():
         password = request.form['password'].encode('utf-8')
 
         if not username or not password:
-            return "Username and password are required", 400
-
+            flash('Username and password are required', 'error')
+            return redirect(url_for('register'))
+        
         existing_user = users_collection.find_one({'username': username})
         if existing_user:
-            return "Username already exists", 400
+            flash('Username already exists', 'error')
+            return redirect(url_for('register'))
 
         hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
         users_collection.insert_one({'username': username, 'password': hashed_password})
+        flash('Registration successful. You can now log in.', 'success')
         return redirect(url_for('index'))
     return render_template('register.html')
 
