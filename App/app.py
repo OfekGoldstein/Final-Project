@@ -27,8 +27,8 @@ if planets_collection.count_documents({}) == 0:
 @app.route('/')
 def index():
     if 'username' in session:
-        messages = get_flashed_messages()
-        return render_template('index.html', messages=messages)
+        flash("Registration completed", 'success')
+        return render_template('index.html')
     else:
         return render_template('index.html')
 
