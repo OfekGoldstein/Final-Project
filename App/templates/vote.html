@@ -52,32 +52,40 @@
         .vote-form button:hover {
             background-color: #45a049;
         }
+        .vote-success-message {
+            display: none; /* Hidden by default */
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            margin-top: 10px;
+        }
         .logout-button {
-    position: absolute;
-    top: 10px;
-    left: 1030px; /* Adjusted for more rightward positioning */
-    padding: 10px 20px;
-    background-color: #f44336; /* Red color for logout button */
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-.logout-button:hover {
-    background-color: #cc0000; /* Darker red on hover */
-}
-.back-button {
-    position: absolute;
-    top: 10px;
-    right: 1020px; /* Adjusted for more leftward positioning */
-    padding: 10px 20px;
-    background-color: #337ab7; /* Blue color for back button */
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-.back-button:hover {
-    background-color: #286090; /* Darker blue on hover */
-}
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px 20px;
+            background-color: #f44336; /* Red color for logout button */
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .logout-button:hover {
+            background-color: #cc0000; /* Darker red on hover */
+        }
+        .back-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            background-color: #337ab7; /* Blue color for back button */
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .back-button:hover {
+            background-color: #286090; /* Darker blue on hover */
+        }
     </style>
 </head>
 <body>
@@ -196,6 +204,41 @@
 
             <button type="submit">Submit Vote</button>
         </form>
+
+        <!-- Success Message -->
+        <div id="vote-success" class="vote-success-message">
+            Vote received successfully!
+        </div>
     </div>
+
+    <script>
+        // Show success message after form submission
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.querySelector('.vote-form');
+
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                
+                const formData = new FormData(form);
+                const response = await fetch('/vote', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const successMessage = document.getElementById('vote-success');
+                    successMessage.style.display = 'block';
+
+                    // Hide success message after 3 seconds (adjust as needed)
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 3000);
+
+                    // Optionally redirect after showing the message
+                    // window.location.href = '/planets';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
