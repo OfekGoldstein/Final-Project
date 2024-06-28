@@ -9,38 +9,49 @@
         body {
             background-color: black;
             color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
         }
-        .flash-message {
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid transparent;
-            border-radius: 4px;
+        .title {
+            margin-bottom: 20px;
+            font-size: 2em;
         }
-        .flash-message.error {
-            color: white;
-            background-color: #a94442;
-            border-color: #a94442;
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
         }
-        .flash-message.success {
-            color: white;
-            background-color: #3c763d;
-            border-color: #3c763d;
+        .buttons-container button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <ul>
-            {% for category, message in messages %}
-                <li class="flash-message {{ category }}">{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-    <h1>Welcome to the Solar System App</h1>
-    <button onclick="window.location.href='/register'">Register</button>
-    <button onclick="window.location.href='/login'">Login</button>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul>
+                    {% for category, message in messages %}
+                        <li class="flash-message {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+    <h1 class="title">Welcome to the Solar System App</h1>
+    <div class="buttons-container">
+        <button onclick="window.location.href='/login'">Login</button>
+        <button onclick="window.location.href='/register'">Register</button>
+    </div>
 </body>
 </html>
