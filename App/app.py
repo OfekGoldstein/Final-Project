@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template, session, redirect, url_for
+from flask import Flask, jsonify, request, render_template, session, redirect, url_for, flash, get_flashed_messages
 from pymongo import MongoClient
 import json
 import os
@@ -65,7 +65,8 @@ def login():
         if user and bcrypt.checkpw(password, user['password']):
             session['username'] = username
             return redirect(url_for('planets'))
-        return "Invalid username or password", 400
+        flash("Invalid username or password, please try again", "error")
+        return redirect(url_for('login'))
     return render_template('login.html')
 
 @app.route('/logout')
