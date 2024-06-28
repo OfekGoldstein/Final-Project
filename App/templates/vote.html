@@ -231,6 +231,7 @@
                     voteMessage.style.display = 'block';
                     setTimeout(() => {
                         voteMessage.style.display = 'none';
+                        window.location.href = '/planets'; // Redirect after 3 seconds
                     }, 3000); // Hide message after 3 seconds
                 }
             });
