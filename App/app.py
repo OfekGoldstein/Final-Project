@@ -93,6 +93,7 @@ def vote():
         return redirect(url_for('index'))
     
     if request.method == 'GET':
+        planets = list(planets_collection.find({}))
         return render_template('vote.html', planets=planets)
     elif request.method == 'POST':
         data = request.form
@@ -102,7 +103,7 @@ def vote():
         if not planet_name:
             return jsonify({"error": "Planet name not provided"}), 400
 
-        planet = planets_collection.find_one({'name': planet_name})
+        planet = planets_collection.find_one({'Name': planet_name})
         if planet:
             # Update votes collection
             votes_collection.insert_one({
