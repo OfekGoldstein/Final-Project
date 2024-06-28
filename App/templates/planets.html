@@ -189,6 +189,20 @@
                 Description: {{ planets[8]['Description'] }}
             </div>
         </div>
+
+        <!-- Display error message if user already voted -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'error' %}
+                        <div class="error-message">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
         <!-- Logout button container -->
         <div class="logout-container">
             <button class="logout-button" onclick="window.location.href='/logout'">Logout</button>
