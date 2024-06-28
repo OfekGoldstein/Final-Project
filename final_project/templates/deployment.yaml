@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: final-project-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: final_project
+  template:
+    metadata:
+      labels:
+        app: final_project
+    spec:
+      containers:
+        - name: flask-app-container
+          image: ofekgoldstein/final_project:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: FLASK_APP
+              value: "app.py"
+            - name: FLASK_ENV
+              value: "production"
