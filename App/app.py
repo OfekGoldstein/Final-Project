@@ -98,7 +98,7 @@ def vote():
     elif request.method == 'POST':
         data = request.form
         planet_name = data.get('planet_name')
-        comment = data.get('comment')
+        comment = data.get('reason')
 
         if not planet_name:
             return jsonify({"error": "Planet name not provided"}), 400
