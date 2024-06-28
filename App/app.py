@@ -92,6 +92,12 @@ def vote():
     if 'username' not in session:
         return redirect(url_for('index'))
     
+    # Check if the user has already voted
+    user_voted = votes_collection.find_one({'voter': session['username']})
+    if user_voted:
+        flash("Sorry, but you already voted", 'error')
+        return redirect(url_for('planets'))  # Redirect to planets page if user has voted
+    
     if request.method == 'GET':
         planets = list(planets_collection.find({}))
         return render_template('vote.html', planets=planets)
