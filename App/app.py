@@ -1,14 +1,14 @@
-from flask import Flask, jsonify, request, render_template, session, redirect, url_for, flash, get_flashed_messages
+from flask import Flask, jsonify, request, render_template, session, redirect, url_for, flash
 from pymongo import MongoClient
 import json
 import os
 import bcrypt
 
 app = Flask(__name__)
-app.secret_key = 'zaza7531'
+app.secret_key = 'your_secret_key'
 
 # MongoDB connection setup
-client = MongoClient('mongodb://root:ieWne5HG2P@10.109.237.149:27017/Final_Project?authSource=admin')
+client = MongoClient('mongodb://root:Mpg3o9TbNX@10.97.126.87:27017/Final_Project?authSource=admin')
 db = client['Final_Project']
 users_collection = db['users']
 planets_collection = db['planets']
@@ -44,38 +44,28 @@ def register():
         password = request.form['password'].encode('utf-8')
 
         if not username or not password:
-            flash('Username and password are required', 'error')
+            flash("Username and password are required", 'error')
             return redirect(url_for('register'))
 
-        # Hash the password for comparison
         hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
 
-        # Check if a user with the username exists
-        existing_user_by_username = users_collection.find_one({'username': username})
-        # Check if a user with the hashed password exists
-        existing_user_by_password = users_collection.find_one({'password': hashed_password})
+        # Check if username exists in the database
+        existing_user = users_collection.find_one({'username': username})
 
-        # Check if both username and hashed password exist together
-        existing_user = users_collection.find_one({'username': username, 'password': hashed_password})
         if existing_user:
-            flash('Username and password combination already exists', 'error')
-            return redirect(url_for('register'))
+            # Compare the provided hashed password with the stored hashed password
+            if bcrypt.checkpw(password, existing_user['password']):
+                # Allow registration if the same username and password combination exists
+                flash("Username and password combination already exists", 'error')
+                return redirect(url_for('register'))
 
-        # If either only username or only hashed password exists, allow registration
-        if existing_user_by_username and existing_user_by_password:
-            flash('Username and password combination already exists', 'error')
-            return redirect(url_for('register'))
-        
-        # If either only username or only hashed password exists, allow registration
-        if existing_user_by_username or existing_user_by_password:
-            flash('Registration successful. You can now log in.', 'success')
-            return redirect(url_for('index'))
-
+        # Insert new user if username is unique or does not exist with this password
         users_collection.insert_one({'username': username, 'password': hashed_password})
-        flash('Registration successful. You can now log in.', 'success')
+        flash("Registration successful", 'success')
         return redirect(url_for('index'))
 
     return render_template('register.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -86,8 +76,10 @@ def login():
         if user and bcrypt.checkpw(password, user['password']):
             session['username'] = username
             return redirect(url_for('planets'))
-        flash("Invalid username or password, please try again", "error")
-        return redirect(url_for('login'))
+        else:
+            flash("Invalid username or password", 'error')
+            return redirect(url_for('login'))
+
     return render_template('login.html')
 
 @app.route('/logout')
