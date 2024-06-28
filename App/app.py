@@ -90,24 +90,29 @@ def vote():
     if 'username' not in session:
         return redirect(url_for('index'))
     
-    planet_name = request.form.get('planet_name')
-    comment = request.form.get('comment')
+    if request.method == 'GET':
+        planets = list(planets_collection.find({}))
+        return render_template('vote.html', planets=planets)
+    
+    elif request.method == 'POST':
+        planet_name = request.form.get('planet_name')
+        comment = request.form.get('comment')
 
-    if not planet_name:
-        return jsonify({"error": "Planet name not provided"}), 400
+        if not planet_name:
+            return jsonify({"error": "Planet name not provided"}), 400
 
-    # Check if the planet exists in the database
-    planet = planets_collection.find_one({'name': planet_name})
-    if planet:
-        # Update votes collection
-        votes_collection.update_one(
-            {'planet_name': planet_name},
-            {'$inc': {'votes': 1}, '$push': {'comments': comment}},
-            upsert=True
-        )
-        return jsonify({"message": f"Voted for {planet_name}"}), 200
-    else:
-        return jsonify({"error": "Planet not found"}), 404
+        # Check if the planet exists in the database
+        planet = planets_collection.find_one({'name': planet_name})
+        if planet:
+            # Update votes collection
+            votes_collection.update_one(
+                {'planet_name': planet_name},
+                {'$inc': {'votes': 1}, '$push': {'comments': comment}},
+                upsert=True
+            )
+            return jsonify({"message": f"Voted for {planet_name}"}), 200
+        else:
+            return jsonify({"error": "Planet not found"}), 404
 
 # API endpoints for JSON data
 @app.route('/api/planets', methods=['GET'])
