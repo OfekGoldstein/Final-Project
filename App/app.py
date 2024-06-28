@@ -46,18 +46,31 @@ def register():
         if not username or not password:
             flash('Username and password are required', 'error')
             return redirect(url_for('register'))
-        
-        existing_user = users_collection.find_one({'username': username})
+
+        # Hash the password for comparison
+        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+
+        # Check if a user with the username exists
+        existing_user_by_username = users_collection.find_one({'username': username})
+        # Check if a user with the hashed password exists
+        existing_user_by_password = users_collection.find_one({'password': hashed_password})
+
+        # Check if both username and hashed password exist together
+        existing_user = users_collection.find_one({'username': username, 'password': hashed_password})
         if existing_user:
-            flash('Username already exists', 'error')
+            flash('Username and password combination already exists', 'error')
             return redirect(url_for('register'))
 
-        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+        # If either only username or only hashed password exists, allow registration
+        if existing_user_by_username and existing_user_by_password:
+            flash('Username and password combination already exists', 'error')
+            return redirect(url_for('register'))
+
         users_collection.insert_one({'username': username, 'password': hashed_password})
         flash('Registration successful. You can now log in.', 'success')
         return redirect(url_for('index'))
-    return render_template('register.html')
 
+    return render_template('register.html')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
