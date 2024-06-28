@@ -62,9 +62,14 @@ def register():
             return redirect(url_for('register'))
 
         # If either only username or only hashed password exists, allow registration
-      #  if existing_user_by_username and existing_user_by_password:
-       #     flash('Username and password combination already exists', 'error')
-        #    return redirect(url_for('register'))
+        if existing_user_by_username and existing_user_by_password:
+            flash('Username and password combination already exists', 'error')
+            return redirect(url_for('register'))
+        
+        # If either only username or only hashed password exists, allow registration
+        if existing_user_by_username or existing_user_by_password:
+            flash('Registration successful. You can now log in.', 'success')
+            return redirect(url_for('index'))
 
         users_collection.insert_one({'username': username, 'password': hashed_password})
         flash('Registration successful. You can now log in.', 'success')
