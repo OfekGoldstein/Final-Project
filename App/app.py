@@ -64,7 +64,7 @@ def register():
         # Insert new user if username is unique or does not exist with this password
         users_collection.insert_one({'username': username, 'password': hashed_password})
         flash("Registration successful", 'success')
-        return redirect(url_for('index'))
+        return redirect(url_for('index'))  # Redirect to index after successful registration
 
     return render_template('register.html')
 
