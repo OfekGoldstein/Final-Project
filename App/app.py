@@ -8,8 +8,8 @@ app = Flask(__name__)
 app.secret_key = 'zaza7531'
 
 # MongoDB connection setup
-client = MongoClient('mongodb://root:ieWne5HG2P@10.109.237.149:27017/Final_Project?authSource=admin')
-db = client['Final_Project']
+client = MongoClient('mongodb://root:12345@localhost:27017')
+db = client['Final-project']
 users_collection = db['users']
 planets_collection = db['planets']
 votes_collection = db['votes']
