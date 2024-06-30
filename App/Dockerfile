@@ -18,4 +18,4 @@ ENV FLASK_APP=app.py
 ENV FLASK_ENV=development 
 
 # Command to run the application
-CMD ["cd", "App"", flask", "run", "--host=0.0.0.0"]
+CMD ["flask", "run", "--host=0.0.0.0"]
