@@ -4,7 +4,9 @@ service:
   type: LoadBalancer
   port: 5000
 deployment:
-  replicas: 3
+  replicaset:
+    replicas: 3
   repository:
     name: ofekgoldstein
-    image: final_project:latest
+    image: final_project
+    tag: latest
