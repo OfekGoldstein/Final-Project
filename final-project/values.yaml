@@ -6,5 +6,5 @@ service:
 deployment:
   replicas: 3
   repository:
-    image: ofekgoldstein:final_project
-    tag: latest
+    name: ofekgoldstein
+    image: final_project:latest
