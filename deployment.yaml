@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: {{ .Values.appName }}
+spec:
+  replicas: {{ .Values.deployment.replicaset.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+    spec:
+      containers:
+        - name: {{ .Values.appName }}
+          image: {{ .Values.deployment.repository.name }}/{{ .Values.deployment.repository.image }}:{{ .Values.deployment.repository.tag }}
+          ports:
+            - containerPort: {{ .Values.service.port }}

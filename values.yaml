@@ -1,0 +1,12 @@
+apiVersion: v1
+appName: final-project
+service:
+  type: LoadBalancer
+  port: 5000
+deployment:
+  replicaset:
+    replicas: 3
+  repository:
+    name: ofekgoldstein
+    image: final_project
+    tag: latest
