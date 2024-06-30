@@ -1,5 +1,0 @@
-Flask==3.0.3
-pymongo
-Flask-WTF==1.2.1
-flask-cors
-bcrypt
