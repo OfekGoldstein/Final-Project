@@ -6,3 +6,4 @@ general-info.txt
 pyvenv.cfg
 service.yaml
 values.yaml
+.env

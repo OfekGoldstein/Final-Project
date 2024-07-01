@@ -3,12 +3,21 @@ from pymongo import MongoClient
 import json
 import os
 import bcrypt
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'zaza7531'
+app.secret_key = os.getenv('APP_SECRET_KEY')
 
 # MongoDB connection setup
-client = MongoClient('mongodb://root:12345@localhost:27017')
+user = os.getenv('USER')
+password = os.getenv('PASSWORD')
+host = os.getenv('HOST')
+port = os.getenv('PORT')
+
+client = MongoClient(f'mongodb://{user}:{password}@{host}:{port}/')
 db = client['Final-project']
 users_collection = db['users']
 planets_collection = db['planets']
