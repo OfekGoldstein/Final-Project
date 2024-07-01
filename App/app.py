@@ -15,9 +15,9 @@ app.secret_key = os.getenv('APP.SECRET_KEY')
 user = os.getenv('USER')
 password = os.getenv('PASSWORD')
 host = os.getenv('HOST')
-port = os.getenv('PORT')
+#port = os.getenv('PORT', 27017)
 
-mongo_uri = f'mongodb://{user}:{password}@{host}:{port}/'
+mongo_uri = f'mongodb://{user}:{password}@{host}:27017/'
 
 client = MongoClient(mongo_uri)
 #client = MongoClient("mongodb://root:12345@localhost:27017/")
