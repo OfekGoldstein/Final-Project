@@ -20,7 +20,7 @@ port = os.getenv('PORT')
 #mongo_uri = f'mongodb://{user}:{password}@{host}:27017/'
 
 #client = MongoClient(mongo_uri)
-client = MongoClient("mongodb://root:12345@localhost:27017")
+client = MongoClient("mongodb://root:12345@mongodb:27017")
 db = client['Final-project']
 users_collection = db['users']
 planets_collection = db['planets']
