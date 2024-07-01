@@ -1,9 +1,0 @@
-lib/
-argocd-values.yaml
-deployment.yaml
-general-info.txt
-pyvenv.cfg
-service.yaml
-values.yaml
-.env
-.gitignore
