@@ -16,7 +16,9 @@ user = os.getenv('USER')
 password = os.getenv('PASSWORD')
 host = os.getenv('HOST')
 
-client = MongoClient(f'mongodb://{user}:{password}@{host}:27017/')
+mongo_uri = f'mongodb://{user}:{password}@{host}:27017/'
+
+client = MongoClient(mongo_uri)
 db = client['Final-project']
 users_collection = db['users']
 planets_collection = db['planets']
