@@ -17,7 +17,7 @@ password = os.getenv('PASSWORD')
 host = os.getenv('HOST')
 port = os.getenv('PORT')
 
-mongo_uri = f'mongodb://{user}:{password}@{host}:{port}/'
+mongo_uri = f'mongodb://{user}:{password}@{host}:27017/'
 
 client = MongoClient(mongo_uri)
 db = client['Final-project']
