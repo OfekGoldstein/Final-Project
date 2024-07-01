@@ -86,22 +86,7 @@
         .logout-button:hover {
             background-color: #d32f2f;
         }
-        .calculator-button {
-            position: absolute;
-            bottom: 77px;
-            left: 20px;
-            background-color: white;
-            color: black;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 10px 20px;
-            text-decoration: none;
-        }
-        .calculator-button:hover {
-            background-color: #f0f0f0;
-        }
+        
     </style>
 </head>
 <body>
@@ -263,8 +248,6 @@
         <!-- Vote button remains at the bottom left -->
         <button class="vote-button" onclick="window.location.href='/vote'">Vote for a Planet</button>
 
-        <!-- Navigation link to calculator -->
-        <a href="{{ url_for('calculator') }}" class="calculator-button">Go to Calculator</a>
     </div>
     <script>
         // JavaScript to dynamically add stars to the background
