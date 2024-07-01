@@ -15,9 +15,8 @@ app.secret_key = os.getenv('APP_SECRET_KEY')
 user = os.getenv('USER')
 password = os.getenv('PASSWORD')
 host = os.getenv('HOST')
-port = os.getenv('PORT')
 
-client = MongoClient(f'mongodb://{user}:{password}@{host}:{port}/')
+client = MongoClient(f'mongodb://{user}:{password}@{host}:27017/')
 db = client['Final-project']
 users_collection = db['users']
 planets_collection = db['planets']
