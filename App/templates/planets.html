@@ -88,8 +88,8 @@
         }
         .calculator-button {
             position: absolute;
-            top: 10px;
-            right: 20px;
+            bottom: 40px;
+            left: 20px;
             background-color: white;
             color: black;
             border: none;
@@ -263,7 +263,7 @@
         <button class="vote-button" onclick="window.location.href='/vote'">Vote for a Planet</button>
 
         <!-- Navigation link to calculator -->
-        <a href="{{ url_for('calculator') }}" class="vote-button" style="background-color: white; color: black;">Go to Calculator</a>
+        <a href="{{ url_for('calculator') }}" class="calculator-button">Go to Calculator</a>
     </div>
     <script>
         // JavaScript to dynamically add stars to the background
