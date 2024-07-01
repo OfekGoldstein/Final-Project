@@ -156,6 +156,40 @@ def get_planet_api(name):
         return jsonify(planet)
     else:
         return jsonify({"error": "Planet not found"}), 404
+    
+@app.route('/calculator', methods=['GET', 'POST'])
+def calculator():
+    if request.method == 'POST':
+        # Get form data
+        mass1 = float(request.form.get('mass1'))
+        mass2 = float(request.form.get('mass2'))
+        operation = request.form.get('operation')
+
+        # Perform calculations based on operation
+        if operation == 'add':
+            result = mass1 + mass2
+            operation_str = 'Addition'
+        elif operation == 'subtract':
+            result = mass1 - mass2
+            operation_str = 'Subtraction'
+        elif operation == 'multiply':
+            result = mass1 * mass2
+            operation_str = 'Multiplication'
+        elif operation == 'divide':
+            if mass2 != 0:
+                result = mass1 / mass2
+                operation_str = 'Division'
+            else:
+                result = 'Error: Division by zero'
+                operation_str = 'Division'
+        else:
+            result = 'Error: Invalid operation'
+            operation_str = 'Error'
+
+        return render_template('calculator.html', result=result, operation=operation_str, mass1=mass1, mass2=mass2)
+
+    # If method is GET, render the calculator template
+    return render_template('calculator.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
