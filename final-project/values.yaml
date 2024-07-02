@@ -1,0 +1,20 @@
+apiVersion: v1
+appName: final-project
+
+service:
+  type: ClusterIP
+  port: 5000
+
+deployment:
+  replicas: 3
+  repository:
+    name: ofekgoldstein
+    image: final-project
+    tag: latest
+
+mongo:
+  app_secret_key: zaza7531
+  username: ofek
+  password: ofek2002
+  service: mongodb
+  database: Final-project
