@@ -5,13 +5,15 @@ pipeline {
         DOCKER_IMAGE_FEATURE = 'ofekgoldstein/final-project:feature-${BRANCH_NAME}'
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
         
-        GITHUB_PAT = 'SEPIO1wHQKTvLknxYIgVcE3ThduDaT0rPise' // GitHub PAT credential ID
-        DOCKERHUB_PAT = 'HxTiSCxTaCEznCZZWbevb7Zy3MM ' // Docker Hub PAT credential ID
+        GITHUB_PAT = credentials('github-pat') // GitHub PAT credential ID (configured in Jenkins credentials)
+        DOCKERHUB_PAT = credentials('dockerhub-pat') // Docker Hub PAT credential ID (configured in Jenkins credentials)
         DOCKERHUB_USERNAME = 'ofekgoldstein'
     }
     
     stages {
         stage('Connect to GitHub API') {
+            agent any // Use any agent for simple curl commands
+            
             steps {
                 script {
                     // Verify connectivity to GitHub API
@@ -21,6 +23,8 @@ pipeline {
         }
 
         stage('Checkout') {
+            agent any // Use any agent for git checkout
+            
             steps {
                 // Check out the repository
                 checkout scm
@@ -28,6 +32,13 @@ pipeline {
         }
 
         stage('Feature Branch Build') {
+            agent {
+                docker { 
+                    image 'docker:19.03'
+                    reuseNode true // Reuse the same agent node for efficiency
+                }
+            }
+            
             when {
                 branch 'feature'
             }
@@ -42,6 +53,8 @@ pipeline {
         }
         
         stage('Feature Branch Test') {
+            agent any // Use any agent for testing
+            
             when {
                 branch 'feature'
             }
@@ -56,6 +69,8 @@ pipeline {
         }
         
         stage('Create Merge Request') {
+            agent any // Use any agent for GitHub API calls
+            
             when {
                 branch 'feature'
             }
@@ -67,6 +82,13 @@ pipeline {
         }
         
         stage('Main Branch Build') {
+            agent {
+                docker { 
+                    image 'docker:19.03'
+                    reuseNode true // Reuse the same agent node for efficiency
+                }
+            }
+            
             when {
                 expression {
                     // Execute only when the merge request is approved and merged
@@ -77,13 +99,15 @@ pipeline {
                 script {
                     dir('App') {
                         // Build Docker image for main branch
-                        docker.build("$DOCKER_IMAGE_MAIN .")
+                        sh "docker build -t $DOCKER_IMAGE_MAIN ."
                     }
                 }
             }
         }
         
         stage('Main Branch Test') {
+            agent any // Use any agent for testing
+            
             when {
                 expression {
                     // Execute only when the merge request is approved and merged
@@ -101,6 +125,13 @@ pipeline {
         }
         
         stage('Push to Docker Hub') {
+            agent {
+                docker { 
+                    image 'docker:19.03'
+                    reuseNode true // Reuse the same agent node for efficiency
+                }
+            }
+            
             when {
                 expression {
                     // Execute only when the merge request is approved and merged
@@ -177,7 +208,7 @@ def waitForMerge(prNumber) {
 // Function to push Docker image to Docker Hub
 def pushToDockerHub() {
     script {
-        withCredentials([string(credentialsId: 'dockerhub-PAT', variable: 'DOCKERHUB_PAT')]) {
+        withCredentials([string(credentialsId: 'dockerhub-pat', variable: 'DOCKERHUB_PAT')]) {
             sh "echo $DOCKERHUB_PAT | docker login --username $DOCKERHUB_USERNAME --password-stdin"
             sh "docker push $DOCKER_IMAGE_MAIN"
         }
