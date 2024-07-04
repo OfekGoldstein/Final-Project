@@ -5,8 +5,8 @@ pipeline {
         DOCKER_IMAGE_FEATURE = 'ofekgoldstein/final-project:feature-${BRANCH_NAME}'
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
         
-        GITHUB_PAT = credentials('github-pat') // GitHub PAT credential ID (configured in Jenkins credentials)
-        DOCKERHUB_PAT = credentials('dockerhub-pat') // Docker Hub PAT credential ID (configured in Jenkins credentials)
+        GITHUB_PAT = 'SEPIO1wHQKTvLknxYIgVcE3ThduDaT0rPise' // GitHub PAT credential ID (configured in Jenkins credentials)
+        DOCKERHUB_PAT = 'HxTiSCxTaCEznCZZWbevb7Zy3MM' // Docker Hub PAT credential ID (configured in Jenkins credentials)
         DOCKERHUB_USERNAME = 'ofekgoldstein'
     }
     
@@ -208,7 +208,7 @@ def waitForMerge(prNumber) {
 // Function to push Docker image to Docker Hub
 def pushToDockerHub() {
     script {
-        withCredentials([string(credentialsId: 'dockerhub-pat', variable: 'DOCKERHUB_PAT')]) {
+        withCredentials([string(credentialsId: 'HxTiSCxTaCEznCZZWbevb7Zy3MM', variable: 'DOCKERHUB_PAT')]) {
             sh "echo $DOCKERHUB_PAT | docker login --username $DOCKERHUB_USERNAME --password-stdin"
             sh "docker push $DOCKER_IMAGE_MAIN"
         }
