@@ -66,7 +66,7 @@ pipeline {
             }
         }
         
-        stage('Main Branch Build, Test and Push to Docker Hub') {
+        stage('Main Branch Build') {
             when {
                 expression {
                     // Execute only when the merge request is approved and merged
@@ -77,14 +77,38 @@ pipeline {
                 script {
                     dir('App') {
                         // Build Docker image for main branch
-                        sh "docker build -t $DOCKER_IMAGE_MAIN ."
+                        docker.build("$DOCKER_IMAGE_MAIN .")
                     }
-                    
+                }
+            }
+        }
+        
+        stage('Main Branch Test') {
+            when {
+                expression {
+                    // Execute only when the merge request is approved and merged
+                    return currentBuild.changeSets.collect { it.branch }.flatten().contains('refs/heads/main')
+                }
+            }
+            steps {
+                script {
                     // Run tests (adjust as per your testing framework)
                     sh "pytest"
                     sh "unittest2"
                     sh "nose2"
-                    
+                }
+            }
+        }
+        
+        stage('Push to Docker Hub') {
+            when {
+                expression {
+                    // Execute only when the merge request is approved and merged
+                    return currentBuild.changeSets.collect { it.branch }.flatten().contains('refs/heads/main')
+                }
+            }
+            steps {
+                script {
                     // Push Docker image to Docker Hub
                     pushToDockerHub()
                 }
