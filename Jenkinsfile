@@ -11,6 +11,15 @@ pipeline {
     }
     
     stages {
+        stage('Connect to GitHub API') {
+            steps {
+                script {
+                    // Verify connectivity to GitHub API
+                    sh "curl -s -o /dev/null -w '%{http_code}' https://api.github.com"
+                }
+            }
+        }
+        
         stage('Feature Branch Build') {
             when {
                 branch 'feature'
