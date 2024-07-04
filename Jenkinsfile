@@ -20,6 +20,13 @@ pipeline {
             }
         }
         
+        stage('Checkout') {
+            steps {
+                // Check out the repository
+                checkout scm
+            }
+        }
+
         stage('Feature Branch Build') {
             when {
                 branch 'feature'
