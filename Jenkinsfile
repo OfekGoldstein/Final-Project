@@ -5,8 +5,8 @@ pipeline {
         DOCKER_IMAGE_FEATURE = 'ofekgoldstein/final-project:feature-${BRANCH_NAME}'
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
         
-        GITHUB_PAT = credentials('github-PAT') // GitHub PAT credential ID
-        DOCKERHUB_PAT = credentials('dockerhub-PAT') // Docker Hub PAT credential ID
+        GITHUB_PAT = credentials('SEPIO1wHQKTvLknxYIgVcE3ThduDaT0rPise') // GitHub PAT credential ID
+        DOCKERHUB_PAT = credentials('lvC7oIg6LyO4gcCa4pbwb8XTWXQ') // Docker Hub PAT credential ID
         DOCKERHUB_USERNAME = 'ofekgoldstein'
     }
     
@@ -78,7 +78,12 @@ pipeline {
     
     post {
         success {
-            // Clean up steps if needed
+            // Actions to perform on pipeline success
+            echo "Pipeline completed successfully."
+        }
+        failure {
+            // Actions to perform on pipeline failure
+            echo "Pipeline failed."
         }
     }
 }
