@@ -10,14 +10,14 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = 'zaza7531'
-#app.secret_key = os.getenv('APP.SECRET_KEY')
+#app.secret_key = os.getenv('APP_SECRET_KEY')
 # MongoDB connection setup
 user = os.getenv('USER')
 password = os.getenv('PASSWORD')
 service = os.getenv('SERVICE')
-port = os.getenv('PORT')
+database = os.getenv('DATABASE')
 mongo_uri = 'mongodb://ofek:ofek2002@mongodb:27017/?authSource=Final-project'
-#mongo_uri = f'mongodb://{user}:{password}@{service}:27017/'
+#mongo_uri = f'mongodb://{user}:{password}@{service}:27017/?authSource={database}'
 
 client = MongoClient(mongo_uri)
 db = client['Final-project']
