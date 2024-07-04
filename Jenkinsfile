@@ -19,7 +19,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Checkout') {
             steps {
                 // Check out the repository
@@ -153,7 +153,7 @@ def waitForMerge(prNumber) {
 // Function to push Docker image to Docker Hub
 def pushToDockerHub() {
     script {
-        withCredentials([string(credentialsId: 'dockerhub-pat-id', variable: 'DOCKERHUB_PAT')]) {
+        withCredentials([string(credentialsId: 'dockerhub-PAT', variable: 'DOCKERHUB_PAT')]) {
             sh "echo $DOCKERHUB_PAT | docker login --username $DOCKERHUB_USERNAME --password-stdin"
             sh "docker push $DOCKER_IMAGE_MAIN"
         }
