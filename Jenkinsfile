@@ -15,7 +15,7 @@ pipeline {
             steps {
                 script {
                     // Verify connectivity to GitHub API
-                    sh "curl -s -o /dev/null -w '%{http_code}' https://api.github.com"
+                    sh "curl -s -o /dev/null -w '%{http_code}' -H 'Authorization: token ${GITHUB_PAT}' https://api.github.com"
                 }
             }
         }
