@@ -1,16 +1,46 @@
 pipeline {
-    agent any
-    
+    agent {
+        kubernetes {
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: jnlp
+    image: jenkins/inbound-agent
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 512m
+  - name: docker
+    image: docker:20.10.8
+    command:
+    - cat
+    tty: true
+"""
+        }
+    }
     environment {
-        DOCKER_IMAGE_FEATURE = 'ofekgoldstein/final-project:feature-${BRANCH_NAME}'
+        DOCKER_HUB_CREDENTIALS = 'HxTiSCxTaCEznCZZWbevb7Zy3MM'
+        DOCKER_IMAGE_FEATURE = "ofekgoldstein/final-project:feature-${BRANCH_NAME}"
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
-        
         GITHUB_PAT = 'SEPIO1wHQKTvLknxYIgVcE3ThduDaT0rPise' // GitHub PAT credential ID
-        DOCKERHUB_PAT = 'HxTiSCxTaCEznCZZWbevb7Zy3MM ' // Docker Hub PAT credential ID
         DOCKERHUB_USERNAME = 'ofekgoldstein'
     }
-    
     stages {
+        stage('Check Docker Installation') {
+            steps {
+                container('docker') {
+                    script {
+                        try {
+                            sh 'docker --version'
+                        } catch (Exception e) {
+                            error "Docker is not installed or not found in the agent's PATH."
+                        }
+                    }
+                }
+            }
+        }
         stage('Connect to GitHub API') {
             steps {
                 script {
@@ -19,30 +49,27 @@ pipeline {
                 }
             }
         }
-
         stage('Checkout') {
             steps {
                 // Check out the repository
                 checkout scm
             }
         }
-
         stage('Feature Branch Build') {
             when {
                 branch 'feature'
             }
             steps {
-                script {
-                    dir('App') {
-                        withDockerRegistry(credentialsId: 'dockerhub-cred', url: 'https://hub.docker.com/repository/docker/ofekgoldstein/final-project') {
-                        // Build Docker image for feature branch
+                container('docker') {
+                    script {
+                        dir('App') {
+                            // Build Docker image for feature branch
                             sh "docker build -t $DOCKER_IMAGE_FEATURE ."
+                        }
                     }
                 }
             }
         }
-}
-        
         stage('Feature Branch Test') {
             when {
                 branch 'feature'
@@ -56,7 +83,6 @@ pipeline {
                 }
             }
         }
-        
         stage('Create Merge Request') {
             when {
                 branch 'feature'
@@ -67,30 +93,24 @@ pipeline {
                 }
             }
         }
-        
         stage('Main Branch Build') {
             when {
-                expression {
-                    // Execute only when the merge request is approved and merged
-                    return currentBuild.changeSets.collect { it.branch }.flatten().contains('refs/heads/main')
-                }
+                branch 'main'
             }
             steps {
-                script {
-                    dir('App') {
-                        // Build Docker image for main branch
-                        docker.build("$DOCKER_IMAGE_MAIN .")
+                container('docker') {
+                    script {
+                        dir('App') {
+                            // Build Docker image for main branch
+                            sh "docker build -t $DOCKER_IMAGE_MAIN ."
+                        }
                     }
                 }
             }
         }
-        
         stage('Main Branch Test') {
             when {
-                expression {
-                    // Execute only when the merge request is approved and merged
-                    return currentBuild.changeSets.collect { it.branch }.flatten().contains('refs/heads/main')
-                }
+                branch 'main'
             }
             steps {
                 script {
@@ -101,23 +121,20 @@ pipeline {
                 }
             }
         }
-        
         stage('Push to Docker Hub') {
             when {
-                expression {
-                    // Execute only when the merge request is approved and merged
-                    return currentBuild.changeSets.collect { it.branch }.flatten().contains('refs/heads/main')
-                }
+                branch 'main'
             }
             steps {
-                script {
-                    // Push Docker image to Docker Hub
-                    pushToDockerHub()
+                container('docker') {
+                    script {
+                        // Push Docker image to Docker Hub
+                        pushToDockerHub()
+                    }
                 }
             }
         }
     }
-    
     post {
         success {
             // Actions to perform on pipeline success
@@ -141,10 +158,10 @@ def createMergeRequest() {
                 -H 'Authorization: token ${GITHUB_PAT}' \\
                 -d '{\\"title\\":\\"Merge feature into main\\",\\"head\\":\\"${env.BRANCH_NAME}\\",\\"base\\":\\"main\\"}' \\
                 https://api.github.com/repos/${gitUrl}/pulls
-        """, returnStdout: true)
+        """, returnStdout: true).trim()
             
         // Extract the pull request number from the GitHub API response
-        def prNumber = readJSON text: response.trim().replaceAll('^[^\\d]*', '')['number']
+        def prNumber = readJSON(text: response)['number']
             
         // Wait for the pull request to be approved and merged
         waitForMerge(prNumber)
@@ -163,7 +180,7 @@ def waitForMerge(prNumber) {
                 curl -X GET \\
                     -H 'Authorization: token ${GITHUB_PAT}' \\
                     https://api.github.com/repos/${gitUrl}/pulls/${prNumber}
-            """, returnStdout: true)
+            """, returnStdout: true).trim()
                 
             // Check if the pull request is merged
             merged = readJSON(text: response)['merged']
@@ -179,7 +196,7 @@ def waitForMerge(prNumber) {
 // Function to push Docker image to Docker Hub
 def pushToDockerHub() {
     script {
-        withCredentials([string(credentialsId: 'dockerhub-PAT', variable: 'DOCKERHUB_PAT')]) {
+        withCredentials([string(credentialsId: 'dockerhub-pat', variable: 'DOCKERHUB_PAT')]) {
             sh "echo $DOCKERHUB_PAT | docker login --username $DOCKERHUB_USERNAME --password-stdin"
             sh "docker push $DOCKER_IMAGE_MAIN"
         }
