@@ -34,12 +34,14 @@ pipeline {
             steps {
                 script {
                     dir('App') {
+                        withDockerRegistry(credentialsId: 'dockerhub-cred', url: 'https://hub.docker.com/repository/docker/ofekgoldstein/final-project') {
                         // Build Docker image for feature branch
-                        sh "docker build -t $DOCKER_IMAGE_FEATURE ."
+                            sh "docker build -t $DOCKER_IMAGE_FEATURE ."
                     }
                 }
             }
         }
+}
         
         stage('Feature Branch Test') {
             when {
