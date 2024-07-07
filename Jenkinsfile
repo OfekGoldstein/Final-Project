@@ -36,7 +36,7 @@ spec:
         DOCKER_HUB_CREDENTIALS = 'HxTiSCxTaCEznCZZWbevb7Zy3MM'
 //        DOCKER_IMAGE_FEATURE = "ofekgoldstein/final-project:feature-${BRANCH_NAME}"
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
-        GITHUB_PAT = 'SEPIO1wHQKTvLknxYIgVcE3ThduDaT0rPise' // GitHub PAT credential ID
+        GITHUB_PAT = '1rXtSTvjFtOI9LPlW5nPQgUnV3qqOP1YX4CH' // GitHub PAT credential ID
         DOCKERHUB_USERNAME = 'ofekgoldstein'
     }
     stages {
@@ -89,6 +89,7 @@ spec:
             steps {
                 container('test') {
                     script {
+                        sh 'pip install --upgrade pip'
                         sh 'pip install pytest unittest2 nose2'
                         sh 'pytest'
                         sh 'unittest2'
