@@ -73,7 +73,9 @@ spec:
                 container('test') {
                     script {
                         sh 'curl -LO https://github.com/OfekGoldstein/Final-Project/blob/feature/App/app.py'
-                        // Add more curl or wget commands if needed for other files
+                        sh 'curl -LO https://github.com/OfekGoldstein/Final-Project/blob/feature/App/static/script.js'
+                        sh 'pwd'  // Print current directory
+                        sh 'ls -l'
                     }
                 }
             }
