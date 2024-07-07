@@ -5,4 +5,3 @@ pyvenv.cfg
 .env
 mongodb-conf.yaml
 .helmignore
-.dockerignore
