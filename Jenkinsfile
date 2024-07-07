@@ -34,7 +34,6 @@ spec:
     }
     environment {
         DOCKER_HUB_CREDENTIALS = 'HxTiSCxTaCEznCZZWbevb7Zy3MM'
-//        DOCKER_IMAGE_FEATURE = "ofekgoldstein/final-project:feature-${BRANCH_NAME}"
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
         GITHUB_PAT = '1rXtSTvjFtOI9LPlW5nPQgUnV3qqOP1YX4CH' // GitHub PAT credential ID
         DOCKERHUB_USERNAME = 'ofekgoldstein'
@@ -53,22 +52,20 @@ spec:
                 }
             }
         }
-        stage('Install curl') {
+        stage('Clone Repository') {
             steps {
-                container('test') {
-                    script {
-                        sh 'apt-get update && apt-get install -y curl'
-                    }
-                }
+                git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
             }
         }
-        stage('Download Files') {
+        stage('Setup Environment') {
             steps {
                 container('test') {
                     script {
-                        sh 'curl -LO https://github.com/OfekGoldstein/Final-Project/blob/feature/App'
-                        sh 'pwd'  // Print current directory
-                        sh 'ls -l'
+                        dir('App') {
+                            // Install necessary dependencies
+                            sh 'pip install --upgrade pip'
+                            sh 'pip install -r requirements.txt'
+                        }
                     }
                 }
             }
@@ -80,26 +77,27 @@ spec:
             steps {
                 container('test') {
                     script {
-                        sh 'pip install --upgrade pip'
-                        sh 'pip install pytest'
-                        sh 'pwd'
-                        sh 'ls -l'
-                        sh 'pip install -r requirements.txt'
-                        sh 'python app.py &'  // Run Flask app in background
-                        sleep 7
-                        sh 'pytest test.py'
+                        dir('App') {
+                            sh 'ls -l'
+                            // Run Flask app in the background
+                            sh 'python app.py &'
+                            sleep 10  // Wait for the app to start
+                            
+                            // Run tests
+                            sh 'pytest test.py'
+                        }
                     }
                 }
             }
             post {
-        always {
-            // Clean up steps
-            container('test') {
-                sh 'pkill -f "python app.py"'  // Stop Flask app after tests
+                always {
+                    // Clean up steps
+                    container('test') {
+                        sh 'pkill -f "python app.py"'  // Stop Flask app after tests
+                    }
+                }
             }
         }
-    }
-}
         stage('Create Merge Request') {
             when {
                 branch 'feature'
@@ -110,7 +108,6 @@ spec:
                 }
             }
         }
-
         stage('Main Branch Build') {
             when {
                 branch 'main'
@@ -126,7 +123,6 @@ spec:
                 }
             }
         }
-
         stage('Push to Docker Hub') {
             when {
                 branch 'main'
