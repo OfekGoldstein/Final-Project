@@ -64,6 +64,8 @@ spec:
                         dir('App') {
                             // Install necessary dependencies
                             sh 'pip install --upgrade pip'
+                            sh 'pip install pytest'
+                            sh 'pip install procps'
                             sh 'pip install -r requirements.txt'
                         }
                     }
