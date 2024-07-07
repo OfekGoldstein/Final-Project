@@ -89,6 +89,8 @@ spec:
                     script {
                         sh 'pip install --upgrade pip'
                         sh 'pip install pytest unittest2 nose2'
+                        sh 'pwd'
+                        sh 'ls -l'
                         sh 'pytest'
                         sh 'unittest2'
                         sh 'nose2'
