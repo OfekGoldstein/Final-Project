@@ -1,10 +1,10 @@
 import pytest
-from app import app_test  # Importing app-test.py instead of app.py
+from app_test import app  # Importing app-test.py instead of app.py
 
 @pytest.fixture
 def client():
-    app_test.config['TESTING'] = True
-    with app_test.test_client() as client:
+    app.config['TESTING'] = True
+    with app.test_client() as client:
         yield client
 
 def test_register(client):
