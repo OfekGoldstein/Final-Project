@@ -53,12 +53,6 @@ spec:
                 }
             }
         }
-
-        stage('Clone Repository') {
-            steps {
-                git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
-            }
-        }
         stage('Install curl') {
             steps {
                 container('test') {
@@ -72,8 +66,7 @@ spec:
             steps {
                 container('test') {
                     script {
-                        sh 'curl -LO https://github.com/OfekGoldstein/Final-Project/blob/feature/App/app.py'
-                        sh 'curl -LO https://github.com/OfekGoldstein/Final-Project/blob/feature/App/static/script.js'
+                        sh 'curl -LO https://github.com/OfekGoldstein/Final-Project/blob/feature/App'
                         sh 'pwd'  // Print current directory
                         sh 'ls -l'
                     }
@@ -88,17 +81,25 @@ spec:
                 container('test') {
                     script {
                         sh 'pip install --upgrade pip'
-                        sh 'pip install pytest unittest2 nose2'
+                        sh 'pip install pytest'
                         sh 'pwd'
                         sh 'ls -l'
-                        sh 'pytest'
-                        sh 'unittest2'
-                        sh 'nose2'
+                        sh 'pip install -r requirements.txt'
+                        sh 'python app.py &'  // Run Flask app in background
+                        sleep 7
+                        sh 'pytest test.py'
                     }
                 }
             }
+            post {
+        always {
+            // Clean up steps
+            container('test') {
+                sh 'pkill -f "python app.py"'  // Stop Flask app after tests
+            }
         }
-
+    }
+}
         stage('Create Merge Request') {
             when {
                 branch 'feature'
