@@ -56,7 +56,7 @@ spec:
 
         stage('Clone Repository') {
             steps {
-                git url: 'https://github.com/OfekGoldstein/final-project.git'
+                git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
             }
         }
 
