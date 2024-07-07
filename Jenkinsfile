@@ -53,27 +53,13 @@ spec:
                 }
             }
         }
-    stages {
+
         stage('Clone Repository') {
             steps {
                 git url: 'https://github.com/OfekGoldstein/final-project.git'
             }
         }
-//        stage('Feature Branch Build') {
-//            when {
-//                branch 'feature'
-//            }
-//            steps {
-//               container('docker') {
-//                    script {
-//                        dir('App') {
-//                            // Build Docker image for feature branch
-//                            sh "docker build -t $DOCKER_IMAGE_FEATURE ."
-//                        }
-//                    }
-//                }
-//            }
-//        }
+
         stage('Feature Branch Test') {
             when {
                 branch 'feature'
@@ -90,6 +76,7 @@ spec:
                 }
             }
         }
+
         stage('Create Merge Request') {
             when {
                 branch 'feature'
@@ -100,6 +87,7 @@ spec:
                 }
             }
         }
+
         stage('Main Branch Build') {
             when {
                 branch 'main'
@@ -115,6 +103,7 @@ spec:
                 }
             }
         }
+
         stage('Push to Docker Hub') {
             when {
                 branch 'main'
@@ -129,6 +118,7 @@ spec:
             }
         }
     }
+    
     post {
         success {
             // Actions to perform on pipeline success
