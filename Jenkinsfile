@@ -20,6 +20,11 @@ spec:
     volumeMounts:
     - name: docker-socket
       mountPath: /var/run/docker.sock
+  - name: test
+    image: python:3.9-slim
+    command:
+    - cat
+    tty: true
   volumes:
   - name: docker-socket
     hostPath:
@@ -29,7 +34,7 @@ spec:
     }
     environment {
         DOCKER_HUB_CREDENTIALS = 'HxTiSCxTaCEznCZZWbevb7Zy3MM'
-        DOCKER_IMAGE_FEATURE = "ofekgoldstein/final-project:feature-${BRANCH_NAME}"
+//        DOCKER_IMAGE_FEATURE = "ofekgoldstein/final-project:feature-${BRANCH_NAME}"
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
         GITHUB_PAT = 'SEPIO1wHQKTvLknxYIgVcE3ThduDaT0rPise' // GitHub PAT credential ID
         DOCKERHUB_USERNAME = 'ofekgoldstein'
@@ -62,31 +67,33 @@ spec:
                 checkout scm
             }
         }
-        stage('Feature Branch Build') {
-            when {
-                branch 'feature'
-            }
-            steps {
-                container('docker') {
-                    script {
-                        dir('App') {
-                            // Build Docker image for feature branch
-                            sh "docker build -t $DOCKER_IMAGE_FEATURE ."
-                        }
-                    }
-                }
-            }
-        }
+//        stage('Feature Branch Build') {
+//            when {
+//                branch 'feature'
+//            }
+//            steps {
+//               container('docker') {
+//                    script {
+//                        dir('App') {
+//                            // Build Docker image for feature branch
+//                            sh "docker build -t $DOCKER_IMAGE_FEATURE ."
+//                        }
+//                    }
+//                }
+//            }
+//        }
         stage('Feature Branch Test') {
             when {
                 branch 'feature'
             }
             steps {
-                script {
-                    // Run tests (adjust as per your testing framework)
-                    sh "pytest"
-                    sh "unittest2"
-                    sh "nose2"
+                container('test') {
+                    script {
+                        sh 'pip install pytest unittest2 nose2'
+                        sh 'pytest'
+                        sh 'unittest2'
+                        sh 'nose2'
+                    }
                 }
             }
         }
@@ -112,19 +119,6 @@ spec:
                             sh "docker build -t $DOCKER_IMAGE_MAIN ."
                         }
                     }
-                }
-            }
-        }
-        stage('Main Branch Test') {
-            when {
-                branch 'main'
-            }
-            steps {
-                script {
-                    // Run tests (adjust as per your testing framework)
-                    sh "pytest"
-                    sh "unittest2"
-                    sh "nose2"
                 }
             }
         }
