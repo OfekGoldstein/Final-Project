@@ -59,7 +59,16 @@ spec:
                 git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
             }
         }
-
+        stage('Download Files') {
+            steps {
+                container('test') {
+                    script {
+                        sh 'curl -LO https://github.com/OfekGoldstein/Final-Project/blob/feature/App/app.py'
+                        // Add more curl or wget commands if needed for other files
+                    }
+                }
+            }
+        }
         stage('Feature Branch Test') {
             when {
                 branch 'feature'
