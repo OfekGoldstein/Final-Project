@@ -63,6 +63,8 @@ spec:
                     script {
                         dir('App') {
                             // Install necessary dependencies
+                            sh 'apt-get update'
+                            sh 'apt-get install -y procps'
                             sh 'pip install --upgrade pip'
                             sh 'pip install pytest'
                             sh 'pip install procps'
