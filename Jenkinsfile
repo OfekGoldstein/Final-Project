@@ -17,14 +17,14 @@ spec:
     command:
     - cat
     tty: true
-    volumeMounts:
-    - name: docker-socket
-      mountPath: /var/run/docker.sock
   - name: test
     image: python:3.9-slim
     command:
     - cat
     tty: true
+    volumeMounts:
+    - name: docker-socket
+      mountPath: /var/run/docker.sock
   volumes:
   - name: docker-socket
     hostPath:
@@ -53,18 +53,10 @@ spec:
                 }
             }
         }
-        stage('Connect to GitHub API') {
+    stages {
+        stage('Clone Repository') {
             steps {
-                script {
-                    // Verify connectivity to GitHub API
-                    sh "curl -s -o /dev/null -w '%{http_code}' -H 'Authorization: token ${GITHUB_PAT}' https://api.github.com"
-                }
-            }
-        }
-        stage('Checkout') {
-            steps {
-                // Check out the repository
-                checkout scm
+                git url: 'https://github.com/OfekGoldstein/final-project.git'
             }
         }
 //        stage('Feature Branch Build') {
