@@ -59,6 +59,15 @@ spec:
                 git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
             }
         }
+        stage('Install curl') {
+            steps {
+                container('test') {
+                    script {
+                        sh 'apt-get update && apt-get install -y curl'
+                    }
+                }
+            }
+        }
         stage('Download Files') {
             steps {
                 container('test') {
