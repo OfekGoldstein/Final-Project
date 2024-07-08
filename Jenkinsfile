@@ -69,6 +69,7 @@ spec:
                             sh 'apt-get install -y procps'
                             sh 'pip install --upgrade pip'
                             sh 'pip install pytest'
+                            sh 'pip install mongomock'
                             sh 'pip install -r requirements.txt'
                         }
                     }
@@ -105,13 +106,13 @@ spec:
             }
         }
         
-        stage('Create Merge Request') {
+        stage('Create pull Request') {
             when {
                 branch 'feature'
             }
             steps {
                 script {
-                    createMergeRequest()
+                    createPullRequest()
                 }
             }
         }
@@ -159,49 +160,49 @@ spec:
     }
 }
 
-// Function to create merge request
-def createMergeRequest() {
+// Function to create pull request
+def createPullRequest() {
     script {
         def gitUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
                     
-        // Create merge request using GitHub API
+        // Create pull request using GitHub API
         def response = sh(script: """
             curl -X POST \\
                 -H 'Authorization: token ${GITHUB_PAT}' \\
-                -d '{\\"title\\":\\"Merge feature into main\\",\\"head\\":\\"${env.BRANCH_NAME}\\",\\"base\\":\\"main\\"}' \\
+                -d '{\\"title\\":\\"Pull feature into main\\",\\"head\\":\\"${env.BRANCH_NAME}\\",\\"base\\":\\"main\\"}' \\
                 https://api.github.com/repos/${gitUrl}/pulls
         """, returnStdout: true).trim()
             
         // Extract the pull request number from the GitHub API response
         def prNumber = readJSON(text: response)['number']
             
-        // Wait for the pull request to be approved and merged
-        waitForMerge(prNumber)
+        // Wait for the pull request to be approved and pulled
+        waitForPull(prNumber)
     }
 }
 
-// Function to wait for the pull request to be merged
-def waitForMerge(prNumber) {
+// Function to wait for the pull request to be pulled
+def waitForPull(prNumber) {
     script {
         def gitUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
             
-        // Poll GitHub API to check if the pull request is merged
-        def merged = false
-        while (!merged) {
+        // Poll GitHub API to check if the pull request is pulled
+        def pulled = false
+        while (!pulled) {
             def response = sh(script: """
                 curl -X GET \\
                     -H 'Authorization: token ${GITHUB_PAT}' \\
                     https://api.github.com/repos/${gitUrl}/pulls/${prNumber}
             """, returnStdout: true).trim()
                 
-            // Check if the pull request is merged
-            merged = readJSON(text: response)['merged']
+            // Check if the pull request is pulled
+            pulled = readJSON(text: response)['pulled']
                 
             // Wait for 30 seconds before checking again
             sleep 30
         }
             
-        echo "Pull request ${prNumber} is merged. Proceeding with main branch steps."
+        echo "Pull request ${prNumber} is pulled. Proceeding with main branch steps."
     }
 }
 
