@@ -1,13 +1,15 @@
 import pytest
 from mongomock import MongoClient
-from flask import Flask
-import app as flask_app  # Assuming your Flask app instance is named 'app' in app.py
+from app import app as flask_app  # Ensure 'app' is imported from the correct module
 
 # Fixture to provide a test client for Flask app
 @pytest.fixture
-def client():
+def client(monkeypatch):
     # Setting up app for testing
     flask_app.config['TESTING'] = True
+
+    # Mock MongoDB connection with mongomock
+    monkeypatch.setattr('pymongo.MongoClient', MongoClient)
 
     with flask_app.test_client() as client:
         yield client
