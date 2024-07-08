@@ -37,6 +37,7 @@ spec:
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
         GITHUB_PAT = '1rXtSTvjFtOI9LPlW5nPQgUnV3qqOP1YX4CH' // Replace with your actual GitHub PAT credential ID
         DOCKERHUB_USERNAME = 'ofekgoldstein'
+        PYTHONPATH = "${WORKSPACE}/App"
     }
     stages {
         stage('Check Docker Installation') {
