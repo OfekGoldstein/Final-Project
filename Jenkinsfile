@@ -87,11 +87,11 @@ spec:
                         dir('App') {
                             sh 'ls -l'
                             // Run Flask app in the background
-                            sh 'python app.py &'
-                            sleep 10  // Wait for the app to start
+//                            sh 'python app.py &'
+//                            sleep 10  // Wait for the app to start
                             
                             // Run tests
-                            sh 'pytest test.py'
+                            sh 'pytest /tests'
                         }
                     }
                 }
