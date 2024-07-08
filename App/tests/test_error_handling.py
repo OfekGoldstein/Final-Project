@@ -1,5 +1,5 @@
 import pytest
-from App import app
+from app import app
 from mongomock import MongoClient
 
 @pytest.fixture
