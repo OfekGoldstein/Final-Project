@@ -1,5 +1,5 @@
 import pytest
-from app import app  # Assuming app_test.py is your testing version of app.py
+from ..app import app  # Assuming app_test.py is your testing version of app.py
 from mongomock import MongoClient
 
 @pytest.fixture
