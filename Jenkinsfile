@@ -91,8 +91,7 @@ spec:
 //                            sleep 10  // Wait for the app to start
                             
                             // Run tests
-                            sh 'cd tests'
-                            sh 'pytest'
+                            sh 'pytest tests'
                         }
                     }
                 }
