@@ -1,5 +1,5 @@
 import pytest
-from app_test import app  # Importing app-test.py instead of app.py
+from app import app  # Importing app-test.py instead of app.py
 
 @pytest.fixture
 def client():
