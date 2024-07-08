@@ -16,7 +16,7 @@ user = os.getenv('USER')
 password = os.getenv('PASSWORD')
 service = os.getenv('SERVICE')
 database = os.getenv('DATABASE')
-mongo_uri = 'mongodb://ofek:ofek2002@mongodb:27017/?authSource=Final-project'
+mongo_uri = 'mongodb://ofek:ofek2002@mongodb.default.svc.cluster.local:27017/?authSource=Final-project'
 #mongo_uri = f'mongodb://{user}:{password}@{service}:27017/?authSource={database}'
 
 client = MongoClient(mongo_uri)
