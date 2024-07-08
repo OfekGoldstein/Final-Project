@@ -86,7 +86,7 @@ spec:
                         dir('App') {
                             sh 'ls -l'
                             // Run Flask app in the background
-                            sh 'python app_test.py &'
+                            sh 'python app.py &'
                             sleep 10  // Wait for the app to start
                             
                             // Run tests
@@ -99,7 +99,7 @@ spec:
                 always {
                     // Clean up steps
                     container('test') {
-                        sh 'pkill -f "python app_test.py"'  // Stop Flask app after tests
+                        sh 'pkill -f "python app.py"'  // Stop Flask app after tests
                     }
                 }
             }
