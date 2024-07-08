@@ -35,7 +35,7 @@ spec:
     environment {
         DOCKER_HUB_CREDENTIALS = 'HxTiSCxTaCEznCZZWbevb7Zy3MM'
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
-        GITHUB_PAT = credentials('github-pat') // Replace with your actual GitHub PAT credential ID
+        GITHUB_PAT = '1rXtSTvjFtOI9LPlW5nPQgUnV3qqOP1YX4CH' // Replace with your actual GitHub PAT credential ID
         DOCKERHUB_USERNAME = 'ofekgoldstein'
     }
     stages {
