@@ -37,7 +37,6 @@ spec:
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
         GITHUB_PAT = '1rXtSTvjFtOI9LPlW5nPQgUnV3qqOP1YX4CH' // GitHub PAT credential ID
         DOCKERHUB_USERNAME = 'ofekgoldstein'
-    }
     stages {
         stage('Check Docker Installation') {
             steps {
@@ -52,6 +51,7 @@ spec:
                 }
             }
         }
+    }
         stage('Clone Repository') {
             steps {
                 git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
@@ -139,7 +139,6 @@ spec:
                 }
             }
         }
-    }
     
     post {
         success {
