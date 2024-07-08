@@ -70,6 +70,7 @@ spec:
                             sh 'pip install --upgrade pip'
                             sh 'pip install pytest'
                             sh 'pip install mongomock'
+                            sh 'pip install app'
                             sh 'pip install -r requirements.txt'
                         }
                     }
