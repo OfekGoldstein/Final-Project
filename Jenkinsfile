@@ -101,7 +101,7 @@ spec:
                 always {
                     // Clean up steps
                     container('test') {
-                        sh 'pkill -f "python app.py"'  // Stop Flask app after tests
+//                        sh 'pkill -f "python app.py"'  // Stop Flask app after tests
                     }
                 }
             }
