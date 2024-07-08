@@ -1,6 +1,8 @@
+from app import app
 import pytest
-from ..app import app  # Assuming app_test.py is your testing version of app.py
-from mongomock import MongoClient
+import mongomock
+import json
+from pymongo import MongoClient
 
 @pytest.fixture
 def client(monkeypatch):
