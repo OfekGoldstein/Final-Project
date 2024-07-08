@@ -35,8 +35,9 @@ spec:
     environment {
         DOCKER_HUB_CREDENTIALS = 'HxTiSCxTaCEznCZZWbevb7Zy3MM'
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
-        GITHUB_PAT = '1rXtSTvjFtOI9LPlW5nPQgUnV3qqOP1YX4CH' // GitHub PAT credential ID
+        GITHUB_PAT = credentials('github-pat') // Replace with your actual GitHub PAT credential ID
         DOCKERHUB_USERNAME = 'ofekgoldstein'
+    }
     stages {
         stage('Check Docker Installation') {
             steps {
@@ -51,12 +52,13 @@ spec:
                 }
             }
         }
-    }
+        
         stage('Clone Repository') {
             steps {
                 git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
             }
         }
+        
         stage('Setup Environment') {
             steps {
                 container('test') {
@@ -73,6 +75,7 @@ spec:
                 }
             }
         }
+        
         stage('Feature Branch Test') {
             when {
                 branch 'feature'
@@ -101,6 +104,7 @@ spec:
                 }
             }
         }
+        
         stage('Create Merge Request') {
             when {
                 branch 'feature'
@@ -111,6 +115,7 @@ spec:
                 }
             }
         }
+        
         stage('Main Branch Build') {
             when {
                 branch 'main'
@@ -126,6 +131,7 @@ spec:
                 }
             }
         }
+        
         stage('Push to Docker Hub') {
             when {
                 branch 'main'
@@ -139,6 +145,7 @@ spec:
                 }
             }
         }
+    }
     
     post {
         success {
