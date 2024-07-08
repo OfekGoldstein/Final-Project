@@ -1,16 +1,4 @@
 import pytest
-import app as flask_app
-from mongomock import MongoClient
-
-@pytest.fixture
-def client(monkeypatch):
-    flask_app.config['TESTING'] = True
-
-    # Mock MongoDB connection with mongomock
-    monkeypatch.setattr('pymongo.MongoClient', MongoClient)
-
-    with flask_app.test_client() as client:
-        yield client
 
 def test_vote(client):
     # Test voting endpoint
@@ -19,3 +7,17 @@ def test_vote(client):
         reason='Test vote'
     ), follow_redirects=True)
     assert b'Vote received successfully' in response.data
+
+    # Test voting for the same planet twice
+    response = client.post('/vote', data=dict(
+        planet_name='Earth',
+        reason='Test vote again'
+    ), follow_redirects=True)
+    assert b'Sorry, but you already voted' in response.data
+
+    # Test voting for an invalid planet
+    response = client.post('/vote', data=dict(
+        planet_name='InvalidPlanet',
+        reason='Test vote for invalid planet'
+    ), follow_redirects=True)
+    assert b'Planet not found' in response.data

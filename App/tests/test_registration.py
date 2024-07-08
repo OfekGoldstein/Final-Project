@@ -1,16 +1,4 @@
 import pytest
-import app as flask_app
-from mongomock import MongoClient
-
-@pytest.fixture
-def client(monkeypatch):
-    flask_app.config['TESTING'] = True
-
-    # Mock MongoDB connection with mongomock
-    monkeypatch.setattr('pymongo.MongoClient', MongoClient)
-
-    with flask_app.test_client() as client:
-        yield client
 
 def test_register(client):
     # Test registration endpoint
@@ -19,3 +7,17 @@ def test_register(client):
         password='testpassword'
     ), follow_redirects=True)
     assert b'Registration successful' in response.data
+
+    # Test registration with existing username
+    response = client.post('/register', data=dict(
+        username='testuser',
+        password='testpassword'
+    ), follow_redirects=True)
+    assert b'Username and password combination already exists' in response.data
+
+    # Test registration without username or password
+    response = client.post('/register', data=dict(
+        username='',
+        password=''
+    ), follow_redirects=True)
+    assert b'Username and password are required' in response.data

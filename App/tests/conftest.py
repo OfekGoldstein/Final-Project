@@ -1,6 +1,6 @@
 import pytest
 from mongomock import MongoClient
-from app import app as flask_app  # Ensure 'app' is imported from the correct module
+import app as flask_app  # Ensure 'app' is imported from the correct module
 
 # Fixture to provide a test client for Flask app
 @pytest.fixture
