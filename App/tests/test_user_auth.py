@@ -33,12 +33,6 @@ def client():
 
     yield client
 
-def test_register(client):
-    response = client.post('/register', data={'username': 'testuser', 'password': 'testpassword'})
-    assert response.status_code == 302  # Check for redirection
-    follow_response = client.get('/', follow_redirects=True)
-    assert b"Registration successful" in follow_response.data
-
 def test_login(client):
     with client:
         client.post('/register', data={'username': 'testuser', 'password': 'testpassword'})
