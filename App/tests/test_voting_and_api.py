@@ -10,6 +10,7 @@ def client():
 
     # Use mongomock to mock MongoDB collections
     with app.app_context():
+        # Replace actual MongoDB client with mongomock client
         app.db_client = MongoClient()
         app.db = app.db_client['test_final_project']
         app.users_collection = app.db['users']
