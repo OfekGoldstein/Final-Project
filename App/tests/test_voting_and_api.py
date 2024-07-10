@@ -37,7 +37,8 @@ def test_vote(client):
     client.post('/login', data={'username': 'testuser', 'password': 'testpassword'})
     response = client.post('/vote', data={'planet_name': 'Earth', 'reason': 'It\'s my home!'})
     assert response.status_code == 302  # Check for redirection
-    assert b"Vote received successfully" in client.get('/planets').data
+    follow_response = client.get('/planets', follow_redirects=True)
+    assert b"Vote received successfully" in follow_response.data
 
 def test_get_planets_api(client):
     response = client.get('/api/planets')
@@ -47,8 +48,21 @@ def test_get_planets_api(client):
 
 def test_get_planet_api(client):
     response = client.get('/api/planet/Earth')
+    
+    # Check response status code
     assert response.status_code == 200
+    
+    # Check that the response contains JSON data
     planet = response.get_json()
+    assert planet is not None
+    assert isinstance(planet, dict)
+    
+    # Check specific attributes of the planet
     assert planet['Name'] == 'Earth'
     assert planet['Mass'] == '5.97 x 10^24 kg'
     assert planet['Diameter'] == '12,742 km'
+    
+    # Add more assertions as needed for other attributes of the planet
+    assert 'Average Distance from the Center of the Galaxy' in planet
+    assert 'Average Surface Temperature' in planet
+    # Add more assertions as per your application's planet data structure

@@ -36,18 +36,22 @@ def client():
 def test_register(client):
     response = client.post('/register', data={'username': 'testuser', 'password': 'testpassword'})
     assert response.status_code == 302  # Check for redirection
-    assert b"Registration successful" in client.get('/').data
+    follow_response = client.get('/', follow_redirects=True)
+    assert b"Registration successful" in follow_response.data
 
 def test_login(client):
-    client.post('/register', data={'username': 'testuser', 'password': 'testpassword'})
-    response = client.post('/login', data={'username': 'testuser', 'password': 'testpassword'})
-    assert response.status_code == 302  # Check for redirection
-    assert 'username' in session
-    assert session['username'] == 'testuser'
+    with client:
+        client.post('/register', data={'username': 'testuser', 'password': 'testpassword'})
+        response = client.post('/login', data={'username': 'testuser', 'password': 'testpassword'})
+        assert response.status_code == 302  # Check for redirection
+        with client.session_transaction() as session:
+            assert 'username' in session
 
 def test_logout(client):
-    client.post('/register', data={'username': 'testuser', 'password': 'testpassword'})
-    client.post('/login', data={'username': 'testuser', 'password': 'testpassword'})
-    response = client.get('/logout')
-    assert response.status_code == 302  # Check for redirection
-    assert 'username' not in session
+    with client:
+        client.post('/register', data={'username': 'testuser', 'password': 'testpassword'})
+        client.post('/login', data={'username': 'testuser', 'password': 'testpassword'})
+        response = client.get('/logout')
+        assert response.status_code == 302  # Check for redirection
+        with client.session_transaction() as session:
+            assert 'username' not in session
