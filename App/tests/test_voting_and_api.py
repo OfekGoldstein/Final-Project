@@ -44,7 +44,7 @@ def test_get_planets_api(client):
     response = client.get('/api/planets')
     assert response.status_code == 200
     planets = response.get_json()
-    assert len(planets) == 8  # Check that we have 8 planets
+    assert len(planets) == 9  # Check that we have 8 planets
 
 def test_get_planet_api(client):
     response = client.get('/api/planet/Earth')
