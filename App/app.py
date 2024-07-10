@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template, session, redirect, url_for, flash, get_flashed_messages
+from flask import Flask, jsonify, request, render_template, session, redirect, url_for, flash
 from pymongo import MongoClient
 import json
 import os
@@ -10,14 +10,16 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = 'zaza7531'
-#app.secret_key = os.getenv('APP_SECRET_KEY')
+# app.secret_key = os.getenv('APP_SECRET_KEY')
+
 # MongoDB connection setup
 user = os.getenv('USER')
 password = os.getenv('PASSWORD')
 service = os.getenv('SERVICE')
 database = os.getenv('DATABASE')
+#mongo_uri = 'mongodb://ofek:ofek2002@localhost:27017/?authSource=Final-project'
 mongo_uri = 'mongodb://ofek:ofek2002@mongodb.default.svc.cluster.local:27017/?authSource=Final-project'
-#mongo_uri = f'mongodb://{user}:{password}@{service}:27017/?authSource={database}'
+# mongo_uri = f'mongodb://{user}:{password}@{service}:27017/?authSource={database}'
 
 client = MongoClient(mongo_uri)
 db = client['Final-project']
@@ -47,15 +49,15 @@ def index():
 def planets():
     if 'username' not in session:
         return redirect(url_for('index'))
-    
+
     # If user hasn't voted, render the planets page
     planets = list(planets_collection.find({}))
-   
-   # Get vote counts for each planet
+
+    # Get vote counts for each planet
     for planet in planets:
         vote_count = votes_collection.count_documents({'planet_name': planet['Name']})
         planet['vote_count'] = vote_count
-        
+
     return render_template('planets.html', planets=planets)
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -110,13 +112,13 @@ def logout():
 def vote():
     if 'username' not in session:
         return redirect(url_for('index'))
-    
+
     # Check if the user has already voted
     user_voted = votes_collection.find_one({'voter': session['username']})
     if user_voted:
         flash("Sorry, but you already voted", 'error')
         return redirect(url_for('planets'))  # Redirect to planets page if user has voted
-    
+
     if request.method == 'GET':
         planets = list(planets_collection.find({}))
         return render_template('vote.html', planets=planets)
