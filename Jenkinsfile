@@ -107,7 +107,7 @@ spec:
                         sh """
                         curl -X POST -H "Authorization: token ${GITHUB_PAT}" \
                              -H "Accept: application/vnd.github.v3+json" \
-                             https://api.github.com/repos/${repoName}/pulls \
+                             https://api.github.com/repos/OfekGoldstein/Final-Project/pulls \
                              -d '{
                                     "title": "Merge feature into main",
                                     "head": "feature",
