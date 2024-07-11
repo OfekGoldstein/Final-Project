@@ -25,6 +25,12 @@ spec:
     volumeMounts:
     - name: docker-socket
       mountPath: /var/run/docker.sock
+  - name: gh
+    image: ghcr.io/github/runner:latest  # Using a pre-built image with GitHub CLI (gh)
+    command:
+    - sleep
+    - infinity  # Keep the container running
+    tty: true
   volumes:
   - name: docker-socket
     hostPath:
@@ -86,11 +92,13 @@ spec:
                     branch 'main'                
             }
             steps {
+                container('gh') {
                 script {
                     createPullRequest()
                 }
             }
         }
+    }
         
         stage('Main Branch Build') {
             when {
@@ -135,51 +143,20 @@ spec:
     }
 }
 
-// Function to create pull request
+// Function to create pull request using GitHub CLI (gh)
 def createPullRequest() {
     script {
+        // Ensure GitHub CLI (gh) is configured with the GitHub PAT
+        sh "gh auth login --with-token <<< '${GITHUB_PAT}'"
+        
+        // Get the current repository URL and extract repo name
         def gitUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
         def repoName = gitUrl.replaceFirst(/^.*\/([^\/]+\/[^\/]+).git$/, '$1')
         
-        echo "Creating pull request from 'main' to 'feature' for repo: ${repoName}"
+        echo "Creating pull request from 'feature' to 'main' for repo: ${repoName}"
         
-        // Perform a GET request to GitHub API (Example)
-        def response = sh(script: """
-            curl --request GET \\
-                --url "https://api.github.com/octocat" \\
-                --header "Authorization: token ${GITHUB_PAT}"
-        """, returnStdout: true).trim()
-        
-        echo "GitHub API response:"
-        echo response
-        
-        // Create pull request using GitHub API
-        def prResponse = sh(script: """
-            curl -X POST \\
-                -H 'Authorization: token ${GITHUB_PAT}' \\
-                -d '{\\"title\\":\\"Pull main into feature\\",\\"head\\":\\"main\\",\\"base\\":\\"feature\\"}' \\
-                https://api.github.com/repos/${repoName}/pulls
-        """, returnStdout: true).trim()
-        
-        echo "Pull request creation response:"
-        echo prResponse
-        
-        // Check for errors
-        if (prResponse.contains("Bad credentials")) {
-            error "Failed to create pull request. Bad credentials."
-        }
-        
-        // Extract the pull request number from the GitHub API response
-        def prNumber = readJSON(text: prResponse)['number']
-        
-        if (prNumber == null) {
-            error "Failed to create pull request. Response: ${prResponse}"
-        }
-        
-        echo "Pull request number: ${prNumber}"
-        
-        // Wait for the pull request to be approved and merged
-        waitForPull(prNumber, repoName)
+        // Create a pull request using gh CLI (merge feature into main)
+        sh "gh pr create --title 'Merge feature into main' --body 'Automated pull request from Jenkins pipeline' --base main --head feature --repo ${repoName}"
     }
 }
 
