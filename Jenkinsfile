@@ -98,7 +98,9 @@ spec:
                 container('gh') {
                     script {
                         // Ensure GitHub CLI (gh) is configured with the GitHub PAT
-                        sh "echo '${GITHUB_PAT}' | gh auth login --with-token"
+                        withCredentials([string(credentialsId: 'GITHUB_PAT', variable: 'GITHUB_PAT')]) {
+                            sh "echo '${GITHUB_PAT}' | gh auth login --with-token"
+                        }
                         
                         // Get the current repository URL and extract repo name
                         def gitUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
