@@ -98,7 +98,7 @@ spec:
                 container('gh') {
                     script {
                         // Ensure GitHub CLI (gh) is configured with the GitHub PAT
-                        withCredentials([string(credentialsId: 'GITHUB_PAT', variable: 'GITHUB_PAT')]) {
+                        withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_PAT')]) {
                             sh "echo '${GITHUB_PAT}' | gh auth login --with-token"
                         }
                         
