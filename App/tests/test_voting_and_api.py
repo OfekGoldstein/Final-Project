@@ -34,8 +34,8 @@ def client():
     yield client
 
 def test_vote(client):
-    client.post('/register', data={'username': 'testuser', 'password': 'testpassword'})
-    client.post('/login', data={'username': 'testuser', 'password': 'testpassword'})
+    client.post('/register', data={'username': 'testusers', 'password': 'testpassword'})
+    client.post('/login', data={'username': 'testusers', 'password': 'testpassword'})
     response = client.post('/vote', data={'planet_name': 'Earth', 'reason': 'It\'s my home!'})
     assert response.status_code == 302  # Check for redirection
 
