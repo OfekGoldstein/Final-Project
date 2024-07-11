@@ -100,7 +100,7 @@ spec:
                         // Ensure GitHub CLI (gh) is configured with the GitHub PAT
                         withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_PAT')]) {
                             sh """
-                            echo "$GITHUB_PAT" | gh auth login --with-token
+                            echo "$GITHUB_PAT" | gh auth login
                             """
                         }
                         
