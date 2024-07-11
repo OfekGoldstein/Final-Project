@@ -51,12 +51,14 @@ spec:
                 container('docker') {
                     script {
                         // Install necessary dependencies and GitHub CLI (gh)
-                        sh 'apt-get update'
-                        sh 'apt-get install -y procps gnupg'
-                        sh 'apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0'
-                        sh 'apt-add-repository https://cli.github.com/packages'
-                        sh 'apt-get update'
-                        sh 'apt-get install gh -y'
+                sh 'apk update'
+                sh 'apk add procps gnupg bash'
+                
+                // Install GitHub CLI (gh) using Alpine Linux commands
+                sh 'apk add --no-cache curl'
+                sh 'apk add --no-cache git'
+                sh 'apk add --no-cache openssh-client'
+                sh 'apk add --no-cache gh'
                     }
                 }
                 
