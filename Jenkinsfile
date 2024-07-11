@@ -65,7 +65,7 @@ spec:
         
         stage('Feature Branch Test') {
             when {
-                branch 'feature'
+                branch 'not main'
             }
             steps {
                 container('test') {
@@ -80,7 +80,7 @@ spec:
         
         stage('Create Pull Request') {
             when {
-                branch 'feature'
+                branch 'not main'
             }
             steps {
                 script {
