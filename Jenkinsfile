@@ -9,9 +9,7 @@ spec:
   - name: jnlp
     image: jenkins/inbound-agent
     resources:
-      requests:
-        memory: 512Mi
-        cpu: 512m
+      requests: {}
   - name: docker
     image: docker:20.10.8
     command:
@@ -37,6 +35,7 @@ spec:
   - name: docker-socket
     hostPath:
       path: /var/run/docker.sock
+
 """
         }
     }
