@@ -83,10 +83,7 @@ spec:
         
         stage('Create Pull Request') {
             when {
-                not {
-                    branch 'main'
-                }
-                
+                    branch 'main'                
             }
             steps {
                 script {
@@ -144,28 +141,39 @@ def createPullRequest() {
         def gitUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
         def repoName = gitUrl.replaceFirst(/^.*\/([^\/]+\/[^\/]+).git$/, '$1')
         
-        echo "Creating pull request for repo: ${repoName} from branch: ${env.BRANCH_NAME}"
+        echo "Creating pull request from 'main' to 'feature' for repo: ${repoName}"
+        
+        // Perform a GET request to GitHub API (Example)
+        def response = sh(script: """
+            curl --request GET \\
+                --url "https://api.github.com/octocat" \\
+                --header "Authorization: token ${GITHUB_PAT}"
+        """, returnStdout: true).trim()
+        
+        echo "GitHub API response:"
+        echo response
         
         // Create pull request using GitHub API
-        def response = sh(script: """
+        def prResponse = sh(script: """
             curl -X POST \\
-                --header 'Authorization: OfekGoldstein token ${GITHUB_PAT}' \\
-                -d '{\\"title\\":\\"Pull feature into main\\",\\"head\\":\\"${env.BRANCH_NAME}\\",\\"base\\":\\"main\\"}' \\
+                -H 'Authorization: token ${GITHUB_PAT}' \\
+                -d '{\\"title\\":\\"Pull main into feature\\",\\"head\\":\\"main\\",\\"base\\":\\"feature\\"}' \\
                 https://api.github.com/repos/${repoName}/pulls
         """, returnStdout: true).trim()
         
-        echo "Pull request creation response: ${response}"
+        echo "Pull request creation response:"
+        echo prResponse
         
         // Check for errors
-        if (response.contains("Bad credentials")) {
+        if (prResponse.contains("Bad credentials")) {
             error "Failed to create pull request. Bad credentials."
         }
         
         // Extract the pull request number from the GitHub API response
-        def prNumber = readJSON(text: response)['number']
+        def prNumber = readJSON(text: prResponse)['number']
         
         if (prNumber == null) {
-            error "Failed to create pull request. Response: ${response}"
+            error "Failed to create pull request. Response: ${prResponse}"
         }
         
         echo "Pull request number: ${prNumber}"
@@ -194,15 +202,5 @@ def waitForPull(prNumber, repoName) {
         }
         
         echo "Pull request ${prNumber} is merged. Proceeding with main branch steps."
-    }
-}
-
-// Function to push Docker image to Docker Hub
-def pushToDockerHub() {
-    script {
-        withCredentials([string(credentialsId: DOCKER_HUB_CREDENTIALS, variable: 'DOCKERHUB_PAT')]) {
-            sh "echo $DOCKERHUB_PAT | docker login --username $DOCKERHUB_USERNAME --password-stdin"
-            sh "docker push $DOCKER_IMAGE_MAIN"
-        }
     }
 }
