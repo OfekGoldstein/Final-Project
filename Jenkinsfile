@@ -43,7 +43,7 @@ spec:
     environment {
         DOCKER_HUB_CREDENTIALS = 'HxTiSCxTaCEznCZZWbevb7Zy3MM' // Correct Docker Hub credentials ID
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
-        GITHUB_PAT = bgLOPhFt0hgc8zfWnTfjj9h2VP2c0K3TVcna // Ensure this is your actual GitHub PAT credential ID
+        GITHUB_PAT = 'bgLOPhFt0hgc8zfWnTfjj9h2VP2c0K3TVcna' // Ensure this is your actual GitHub PAT credential ID
         DOCKERHUB_USERNAME = 'ofekgoldstein'
         PYTHONPATH = "${WORKSPACE}/App"
     }
