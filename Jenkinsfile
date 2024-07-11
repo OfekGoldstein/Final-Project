@@ -149,7 +149,7 @@ def createPullRequest() {
         // Create pull request using GitHub API
         def response = sh(script: """
             curl -X POST \\
-                -H 'Authorization: token ${GITHUB_PAT}' \\
+                --header 'Authorization: OfekGoldstein token ${GITHUB_PAT}' \\
                 -d '{\\"title\\":\\"Pull feature into main\\",\\"head\\":\\"${env.BRANCH_NAME}\\",\\"base\\":\\"main\\"}' \\
                 https://api.github.com/repos/${repoName}/pulls
         """, returnStdout: true).trim()
