@@ -97,25 +97,24 @@ spec:
             steps {
                 container('curl') {
                     script {
-                            // Get the current repository URL and extract repo name
-                            def gitUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
-                            def repoName = gitUrl.replaceFirst(/^.*\/([^\/]+\/[^\/]+).git$/, '$1')
+                        // Get the current repository URL and extract repo name
+                        def gitUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
+                        def repoName = gitUrl.replaceFirst(/^.*\/([^\/]+\/[^\/]+).git$/, '$1')
 
-                            echo "Creating pull request from 'feature' to 'main' for repo: ${repoName}"
-                            
-                            // Create a pull request using GitHub API
-                            sh """
-                            curl -X POST -H "Authorization: token ${GITHUB_PAT}" \
-                                 -H "Accept: application/vnd.github.v3+json" \
-                                 https://api.github.com/repos/${repoName}/pulls \
-                                 -d '{
-                                        "title": "Merge feature into main",
-                                        "head": "feature",
-                                        "base": "main",
-                                        "body": "Automated pull request from Jenkins pipeline"
-                                      }'
-                            """
-                        }
+                        echo "Creating pull request from 'feature' to 'main' for repo: ${repoName}"
+                        
+                        // Create a pull request using GitHub API
+                        sh """
+                        curl -X POST -H "Authorization: token ${GITHUB_PAT}" \
+                             -H "Accept: application/vnd.github.v3+json" \
+                             https://api.github.com/repos/${repoName}/pulls \
+                             -d '{
+                                    "title": "Merge feature into main",
+                                    "head": "feature",
+                                    "base": "main",
+                                    "body": "Automated pull request from Jenkins pipeline"
+                                  }'
+                        """
                     }
                 }
             }
@@ -164,3 +163,4 @@ spec:
             echo "Pipeline failed."
         }
     }
+}
