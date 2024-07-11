@@ -164,4 +164,3 @@ spec:
             echo "Pipeline failed."
         }
     }
-}
