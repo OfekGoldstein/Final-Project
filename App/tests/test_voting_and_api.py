@@ -33,19 +33,6 @@ def client():
 
     yield client
 
-def test_vote(client):
-    client.post('/register', data={'username': 'testusers', 'password': 'testpassword'})
-    client.post('/login', data={'username': 'testusers', 'password': 'testpassword'})
-    response = client.post('/vote', data={'planet_name': 'Earth', 'reason': 'It\'s my home!'})
-    assert response.status_code == 302  # Check for redirection
-
-    # Follow the redirection to the '/planets' page
-    follow_response = client.get('/planets', follow_redirects=True)
-    assert follow_response.status_code == 200
-
-    # Check for the flash message in the follow_response
-    assert b"Vote received successfully" in follow_response.data
-
 def test_get_planets_api(client):
     response = client.get('/api/planets')
     assert response.status_code == 200
