@@ -17,6 +17,9 @@ spec:
     command:
     - cat
     tty: true
+    volumeMounts:
+    - name: docker-socket
+      mountPath: /var/run/docker.sock
   - name: test
     image: python:3.9-slim
     command:
@@ -25,6 +28,11 @@ spec:
     volumeMounts:
     - name: docker-socket
       mountPath: /var/run/docker.sock
+  - name: gh
+    image: maniator/gh
+    command:
+    - cat
+    tty: true
   volumes:
   - name: docker-socket
     hostPath:
@@ -40,6 +48,7 @@ spec:
         PYTHONPATH = "${WORKSPACE}/App"
     }
     stages {
+        
         stage('Clone Repository') {
             steps {
                 git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
@@ -48,24 +57,10 @@ spec:
         
         stage('Setup Environment') {
             steps {
-                container('docker') {
-                    script {
-                        // Install necessary dependencies and GitHub CLI (gh)
-                sh 'apk update'
-                sh 'apk add procps gnupg bash'
-                
-                // Install GitHub CLI (gh) using Alpine Linux commands
-                sh 'apk add --no-cache curl'
-                sh 'apk add --no-cache git'
-                sh 'apk add --no-cache openssh-client'
-                sh 'apk add --no-cache gh'
-                    }
-                }
-                
                 container('test') {
                     script {
                         dir('App') {
-                            // Install Python dependencies
+                            // Install necessary dependencies
                             sh 'apt-get update'
                             sh 'apt-get install -y procps'
                             sh 'pip install --upgrade pip'
@@ -86,7 +81,6 @@ spec:
                 container('test') {
                     script {
                         dir('App') {
-                            // Run tests using pytest
                             sh 'pytest tests'
                         }
                     }
@@ -96,13 +90,15 @@ spec:
         
         stage('Create Pull Request') {
             when {
-                branch 'main'
+                not {
+                    branch 'main'
+                }
             }
             steps {
-                container('docker') {
+                container('gh') {
                     script {
                         // Ensure GitHub CLI (gh) is configured with the GitHub PAT
-                        sh "gh auth login --with-token <<< '${GITHUB_PAT}'"
+                        sh "echo '${GITHUB_PAT}' | gh auth login --with-token"
                         
                         // Get the current repository URL and extract repo name
                         def gitUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
@@ -140,8 +136,10 @@ spec:
             steps {
                 container('docker') {
                     script {
-                        // Push Docker image to Docker Hub
-                        pushToDockerHub()
+                        withCredentials([string(credentialsId: 'DOCKER_HUB_CREDENTIALS', variable: 'DOCKER_HUB_PASSWORD')]) {
+                            sh "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin"
+                            sh "docker push $DOCKER_IMAGE_MAIN"
+                        }
                     }
                 }
             }
@@ -156,22 +154,6 @@ spec:
         failure {
             // Actions to perform on pipeline failure
             echo "Pipeline failed."
-        }
-    }
-}
-
-// Function to push Docker image to Docker Hub
-def pushToDockerHub() {
-    script {
-        withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDENTIALS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-            def dockerLogin = "docker login -u $USERNAME -p $PASSWORD"
-            def dockerPush = "docker push $DOCKER_IMAGE_MAIN"
-            
-            // Login to Docker Hub
-            sh "${dockerLogin}"
-            
-            // Push Docker image to Docker Hub
-            sh "${dockerPush}"
         }
     }
 }
