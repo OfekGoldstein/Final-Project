@@ -150,6 +150,11 @@ def createPullRequest() {
         
         echo "Pull request creation response: ${response}"
         
+        // Check for errors
+        if (response.contains("Bad credentials")) {
+            error "Failed to create pull request. Bad credentials."
+        }
+        
         // Extract the pull request number from the GitHub API response
         def prNumber = readJSON(text: response)['number']
         
