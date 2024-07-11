@@ -33,26 +33,13 @@ spec:
         }
     }
     environment {
-        DOCKER_HUB_CREDENTIALS = 'HxTiSCxTaCEznCZZWbevb7Zy3MM'
+        DOCKER_HUB_CREDENTIALS = 'HxTiSCxTaCEznCZZWbevb7Zy3MM' // Correct Docker Hub credentials ID
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
         GITHUB_PAT = '1rXtSTvjFtOI9LPlW5nPQgUnV3qqOP1YX4CH' // Replace with your actual GitHub PAT credential ID
         DOCKERHUB_USERNAME = 'ofekgoldstein'
         PYTHONPATH = "${WORKSPACE}/App"
     }
     stages {
-        stage('Check Docker Installation') {
-            steps {
-                container('docker') {
-                    script {
-                        try {
-                            sh 'docker --version'
-                        } catch (Exception e) {
-                            error "Docker is not installed or not found in the agent's PATH."
-                        }
-                    }
-                }
-            }
-        }
         
         stage('Clone Repository') {
             steps {
@@ -69,10 +56,7 @@ spec:
                             sh 'apt-get update'
                             sh 'apt-get install -y procps'
                             sh 'pip install --upgrade pip'
-                            sh 'pip install pytest'
-                            sh 'pip install mongomock'
-                            sh 'pip install app'
-                            sh 'pip install -r requirements.txt'
+                            sh 'pip install pytest mongomock -r requirements.txt'
                         }
                     }
                 }
@@ -87,28 +71,14 @@ spec:
                 container('test') {
                     script {
                         dir('App') {
-                            sh 'ls -l'
-                            // Run Flask app in the background
-//                            sh 'python app.py &'
-//                            sleep 10  // Wait for the app to start
-                            
-                            // Run tests
                             sh 'pytest tests'
                         }
                     }
                 }
             }
-            post {
-                always {
-                    // Clean up steps
-                    container('test') {
-//                        sh 'pkill -f "python app.py"'  // Stop Flask app after tests
-                    }
-                }
-            }
         }
         
-        stage('Create pull Request') {
+        stage('Create Pull Request') {
             when {
                 branch 'feature'
             }
@@ -166,52 +136,50 @@ spec:
 def createPullRequest() {
     script {
         def gitUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
-                    
+        def repoName = gitUrl.replaceFirst(/^.*\/([^\/]+\/[^\/]+).git$/, '$1')
+        
         // Create pull request using GitHub API
         def response = sh(script: """
             curl -X POST \\
                 -H 'Authorization: token ${GITHUB_PAT}' \\
                 -d '{\\"title\\":\\"Pull feature into main\\",\\"head\\":\\"${env.BRANCH_NAME}\\",\\"base\\":\\"main\\"}' \\
-                https://api.github.com/repos/${gitUrl}/pulls
+                https://api.github.com/repos/${repoName}/pulls
         """, returnStdout: true).trim()
-            
+        
         // Extract the pull request number from the GitHub API response
         def prNumber = readJSON(text: response)['number']
-            
-        // Wait for the pull request to be approved and pulled
-        waitForPull(prNumber)
+        
+        // Wait for the pull request to be approved and merged
+        waitForPull(prNumber, repoName)
     }
 }
 
-// Function to wait for the pull request to be pulled
-def waitForPull(prNumber) {
+// Function to wait for the pull request to be merged
+def waitForPull(prNumber, repoName) {
     script {
-        def gitUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
-            
-        // Poll GitHub API to check if the pull request is pulled
-        def pulled = false
-        while (!pulled) {
+        def merged = false
+        while (!merged) {
             def response = sh(script: """
                 curl -X GET \\
                     -H 'Authorization: token ${GITHUB_PAT}' \\
-                    https://api.github.com/repos/${gitUrl}/pulls/${prNumber}
+                    https://api.github.com/repos/${repoName}/pulls/${prNumber}
             """, returnStdout: true).trim()
-                
-            // Check if the pull request is pulled
-            pulled = readJSON(text: response)['pulled']
-                
+            
+            // Check if the pull request is merged
+            merged = readJSON(text: response)['merged']
+            
             // Wait for 30 seconds before checking again
             sleep 30
         }
-            
-        echo "Pull request ${prNumber} is pulled. Proceeding with main branch steps."
+        
+        echo "Pull request ${prNumber} is merged. Proceeding with main branch steps."
     }
 }
 
 // Function to push Docker image to Docker Hub
 def pushToDockerHub() {
     script {
-        withCredentials([string(credentialsId: 'dockerhub-pat', variable: 'DOCKERHUB_PAT')]) {
+        withCredentials([string(credentialsId: DOCKER_HUB_CREDENTIALS, variable: 'DOCKERHUB_PAT')]) {
             sh "echo $DOCKERHUB_PAT | docker login --username $DOCKERHUB_USERNAME --password-stdin"
             sh "docker push $DOCKER_IMAGE_MAIN"
         }
