@@ -138,6 +138,8 @@ def createPullRequest() {
         def gitUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim()
         def repoName = gitUrl.replaceFirst(/^.*\/([^\/]+\/[^\/]+).git$/, '$1')
         
+        echo "Creating pull request for repo: ${repoName} from branch: ${env.BRANCH_NAME}"
+        
         // Create pull request using GitHub API
         def response = sh(script: """
             curl -X POST \\
@@ -146,8 +148,16 @@ def createPullRequest() {
                 https://api.github.com/repos/${repoName}/pulls
         """, returnStdout: true).trim()
         
+        echo "Pull request creation response: ${response}"
+        
         // Extract the pull request number from the GitHub API response
         def prNumber = readJSON(text: response)['number']
+        
+        if (prNumber == null) {
+            error "Failed to create pull request. Response: ${response}"
+        }
+        
+        echo "Pull request number: ${prNumber}"
         
         // Wait for the pull request to be approved and merged
         waitForPull(prNumber, repoName)
