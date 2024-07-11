@@ -26,7 +26,7 @@ spec:
     - name: docker-socket
       mountPath: /var/run/docker.sock
   - name: gh
-    image: ghcr.io/github/runner:latest  # Using a pre-built image with GitHub CLI (gh)
+    image: ghcr.io/github/super-linter:v4  # Using a pre-built image with GitHub CLI (gh)
     command:
     - sleep
     - infinity  # Keep the container running
