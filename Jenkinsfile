@@ -98,8 +98,10 @@ spec:
                 container('gh') {
                     script {
                         // Ensure GitHub CLI (gh) is configured with the GitHub PAT
-                        withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_PAT')]) {
-                            sh "echo '${GITHUB_PAT}' | gh auth login --with-token"
+                        withCredentials([usernamePassword(credentialsId: 'github-username-password', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
+                            sh """
+                            echo "$GITHUB_PASSWORD" | gh auth login --with-password -u "$GITHUB_USERNAME" -p "$GITHUB_PASSWORD"
+                            """
                         }
                         
                         // Get the current repository URL and extract repo name
