@@ -38,7 +38,7 @@ def test_vote(client):
     client.post('/login', data={'username': 'testuser', 'password': 'testpassword'})
     response = client.post('/vote', data={'planet_name': 'Earth', 'reason': 'It\'s my home!'})
     assert response.status_code == 302  # Check for redirection
-    follow_response = client.get('/planets', follow_redirects=True)
+    follow_response = client.get('/vote', follow_redirects=True)
     assert b"Vote received successfully" in follow_response.data
 
 def test_get_planets_api(client):
