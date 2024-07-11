@@ -98,9 +98,9 @@ spec:
                 container('gh') {
                     script {
                         // Ensure GitHub CLI (gh) is configured with the GitHub PAT
-                        withCredentials([usernamePassword(credentialsId: 'github-username-password', usernameVariable: 'GITHUB_USERNAME', passwordVariable: 'GITHUB_PASSWORD')]) {
+                        withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_PAT')]) {
                             sh """
-                            echo "$GITHUB_PASSWORD" | gh auth login --with-password -u "$GITHUB_USERNAME" -p "$GITHUB_PASSWORD"
+                            echo "$GITHUB_PAT" | gh auth login --with-token
                             """
                         }
                         
