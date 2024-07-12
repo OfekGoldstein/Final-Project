@@ -166,7 +166,6 @@ spec:
                 }
             }
         }
-    }
     
     post {
         success {
@@ -178,4 +177,3 @@ spec:
             echo "Pipeline failed."
         }
     }
-}
