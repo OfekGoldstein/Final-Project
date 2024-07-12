@@ -45,6 +45,8 @@ spec:
         GITHUB_PAT = 'bgLOPhFt0hgc8zfWnTfjj9h2VP2c0K3TVcna' // Ensure this is your actual GitHub PAT credential ID
         DOCKERHUB_USERNAME = 'ofekgoldstein'
         PYTHONPATH = "${WORKSPACE}/App"
+        GIT_USER = "OfekGoldstein"
+        GIT_PASSWORD = "Ofek1167"
     }
     stages {
         
@@ -87,42 +89,28 @@ spec:
             }
         }
         
-        stage('Create Pull Request') {
+        stage("Create Merge Request") {
+            when {
+                expression {
+                    return !env.BRANCH_NAME.equals('main')
+                }
+            }
             steps {
                 container('curl') {
                     script {
-                        sh '''
-                            git checkout feature
-                            # Configure Git user
-                            git config user.name "OfekGoldstein"
-                            git config user.email "ofekgold16@gmail.com"
+                        def BranchName = env.BRANCH_NAME
+                        def mainBranch = "main"
+                        def PullRequestTitle = "Merge ${BranchName} into ${mainBranch}"
+                        def PullRequestBody = "Automatically generated pull request to merge ${BranchName} into ${mainBranch}"
 
-                            # Make some changes (this is just an example)
-                            git add .
-                            git commit -m "Made some changes"
-
-                            # Push the branch to GitHub
-                            git push -u origin feature
-                        '''
-
-                        def pullRequestData = [
-                            title: "My Feature",
-                            body: "This is a description of my feature.",
-                            head: "feature",
-                            base: "main"
-                            ]
-
-                        def pullRequestJson = new groovy.json.JsonBuilder(pullRequestData).toString()
-
-                        def response = sh(script: """
-                            curl -s -X POST \
-                            -H "Authorization: token $GITHUB_PAT" \
-                            -H "Accept: application/vnd.github.v3+json" \
-                            -d '$pullRequestJson' \
-                            https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/pulls
-                        """, returnStdout: true).trim()
-
-                        echo "Pull Request Response: ${response}"
+                        sh """
+                          curl -u ${GIT_USER}:${GIT_PASSWORD} -X POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/OfekGoldstein/Final-Project/pulls -d '{
+                            "title": "${PullRequestTitle}",
+                            "body": "${PullRequestBody}",
+                            "head": "${BranchName}",
+                            "base": "${mainBranch}"
+                          }'
+                        """
                     }
                 }
             }
