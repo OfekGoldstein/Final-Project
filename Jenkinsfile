@@ -96,22 +96,20 @@ spec:
                 }
             }
             steps {
-                container('curl') {
-                    script {
-                        def BranchName = env.BRANCH_NAME
-                        def mainBranch = "main"
-                        def PullRequestTitle = "Merge ${BranchName} into ${mainBranch}"
-                        def PullRequestBody = "Automatically generated pull request to merge ${BranchName} into ${mainBranch}"
+                script {
+                    def BranchName = env.BRANCH_NAME
+                    def mainBranch = "main"
+                    def PullRequestTitle = "Merge ${BranchName} into ${mainBranch}"
+                    def PullRequestBody = "Automatically generated pull request to merge ${BranchName} into ${mainBranch}"
 
-                        sh """
-                          curl -u ${GIT_USER}:${GIT_PASSWORD} -X POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/OfekGoldstein/Final-Project/pulls -d '{
-                            "title": "${PullRequestTitle}",
-                            "body": "${PullRequestBody}",
-                            "head": "${BranchName}",
-                            "base": "${mainBranch}"
-                          }'
-                        """
-                    }
+                    sh """
+                        curl -u ${GIT_USER}:${GIT_PASSWORD} -X POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/OfekGoldstein/Final-Project/pulls -d '{
+                        "title": "${PullRequestTitle}",
+                        "body": "${PullRequestBody}",
+                        "head": "${BranchName}",
+                        "base": "${mainBranch}"
+                        }'
+                    """
                 }
             }
         }
