@@ -32,6 +32,9 @@ spec:
     - sh
     - -c
     - |
+      apk add --no-cache sudo
+      echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+      apk update
       apk add --no-cache git
       git --version
     - cat
