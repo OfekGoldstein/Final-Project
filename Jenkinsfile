@@ -29,6 +29,11 @@ spec:
   - name: curl
     image: curlimages/curl:latest
     command:
+    - sh
+    - -c
+    - |
+      apk add --no-cache git
+      git --version
     - cat
     tty: true
   volumes:
@@ -88,31 +93,47 @@ spec:
         }
         
         stage('Create Pull Request') {
-            when {
-                not {
-                    branch 'main'
-                }
-            }
             steps {
                 container('curl') {
                     script {
-                        echo "Creating pull request from 'feature' to 'main' for repo: ${repoName}"
-                        // Create a pull request using GitHub API
-                        sh """
-                        curl -X POST -H "Authorization: token ${GITHUB_PAT}" \
-                             -H "Accept: application/vnd.github.v3+json" \
-                             https://api.github.com/repos/OfekGoldstein/Final-Project/pulls \
-                             -d '{
-                                    "title": "Merge feature into main",
-                                    "head": "feature",
-                                    "base": "main",
-                                    "body": "Automated pull request from Jenkins pipeline"
-                                  }'
-                        """
+                        sh '''
+                            git checkout feature
+                            # Configure Git user
+                            git config user.name "OfekGoldstein"
+                            git config user.email "ofekgold16@gmail.com"
+
+                            # Make some changes (this is just an example)
+                            git add .
+                            git commit -m "Made some changes"
+
+                            # Push the branch to GitHub
+                            git push -u origin feature
+                        '''
+
+                        def pullRequestData = [
+                            title: "My Feature",
+                            body: "This is a description of my feature.",
+                            head: "feature",
+                            base: "main"
+                            ]
+
+                        def pullRequestJson = new groovy.json.JsonBuilder(pullRequestData).toString()
+
+                        def response = sh(script: """
+                            curl -s -X POST \
+                            -H "Authorization: token $GITHUB_PAT" \
+                            -H "Accept: application/vnd.github.v3+json" \
+                            -d '$pullRequestJson' \
+                            https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/pulls
+                        """, returnStdout: true).trim()
+
+                        echo "Pull Request Response: ${response}"
                     }
                 }
             }
         }
+    }
+}
         
         stage('Main Branch Build') {
             when {
