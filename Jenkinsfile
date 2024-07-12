@@ -29,14 +29,6 @@ spec:
   - name: curl
     image: curlimages/curl:latest
     command:
-    - sh
-    - -c
-    - |
-      apk add --no-cache sudo
-      echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-      apk update
-      apk add --no-cache git
-      git --version
     - cat
     tty: true
   volumes:
