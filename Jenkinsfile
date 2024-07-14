@@ -40,9 +40,9 @@ spec:
         }
     }
     environment {
-        DOCKER_HUB_CREDENTIALS = withCredentials('dockerhub-token') // Correct Docker Hub credentials ID
+ //       DOCKER_HUB_CREDENTIALS = withCredentials('dockerhub-token') // Correct Docker Hub credentials ID
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
-        GITHUB_PAT = 'bgLOPhFt0hgc8zfWnTfjj9h2VP2c0K3TVcna' // Ensure this is your actual GitHub PAT credential ID
+   //     GITHUB_PAT = 'bgLOPhFt0hgc8zfWnTfjj9h2VP2c0K3TVcna' // Ensure this is your actual GitHub PAT credential ID
         DOCKERHUB_USERNAME = 'ofekgoldstein'
         PYTHONPATH = "${WORKSPACE}/App"
         GITHUB_API_URL = 'https://api.github.com'
