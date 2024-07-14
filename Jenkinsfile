@@ -105,7 +105,7 @@ spec:
                         sh """
                             curl -X POST -u ${USERNAME}:${PASSWORD} \
                             -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "${branchName}", "base": "main" }' \
-                            https://api.github.com/repos/OfekGoldstein/Final-Project/pulls
+                            ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
                         """
                     }
                 }
