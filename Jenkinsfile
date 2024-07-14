@@ -103,7 +103,7 @@ spec:
                         def pullRequestBody = "Automatically generated merge request for branch ${branchName}"
 
                         sh """
-                            curl -X POST -u ${PASSWORD}:x-oauth-basic \
+                            curl -L -X POST -u ${PASSWORD}:x-oauth-basic \
                             -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "${branchName}", "base": "main" }' \
                             https://api.github.com/repos/OfekGoldstein/Final-Project/pulls
                         """
