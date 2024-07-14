@@ -40,16 +40,13 @@ spec:
         }
     }
     environment {
- //       DOCKER_HUB_CREDENTIALS = withCredentials('dockerhub-token') // Correct Docker Hub credentials ID
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
-   //     GITHUB_PAT = 'bgLOPhFt0hgc8zfWnTfjj9h2VP2c0K3TVcna' // Ensure this is your actual GitHub PAT credential ID
         DOCKERHUB_USERNAME = 'ofekgoldstein'
         PYTHONPATH = "${WORKSPACE}/App"
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
     }
     stages {
-        
         stage('Clone Repository') {
             steps {
                 git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
@@ -89,7 +86,7 @@ spec:
             }
         }
         
-        stage('Create merge request'){
+        stage('Create merge request') {
             when {
                 not {
                     branch 'main'
@@ -103,18 +100,15 @@ spec:
                         def pullRequestBody = "Automatically generated merge request for branch ${branchName}"
 
                         sh """
-                            curl -X POST -u ${PASSWORD}:x-oauth-basic \
+                            curl -X POST -u ${USERNAME}:${PASSWORD} \
                             -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "${branchName}", "base": "main" }' \
                             ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
                         """
                     }
                 }
             }
-
         }
-    }
-}
-
+        
         stage('Main Branch Build') {
             when {
                 branch 'main'
@@ -146,6 +140,7 @@ spec:
                 }
             }
         }
+    }
     
     post {
         success {
@@ -157,3 +152,4 @@ spec:
             echo "Pipeline failed."
         }
     }
+}
