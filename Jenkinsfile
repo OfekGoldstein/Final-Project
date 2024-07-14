@@ -41,7 +41,6 @@ spec:
     }
     environment {
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
-        DOCKERHUB_USERNAME = 'ofekgoldstein'
         PYTHONPATH = "${WORKSPACE}/App"
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
@@ -54,6 +53,11 @@ spec:
         }
         
         stage('Setup Environment') {
+            when {
+                not {
+                    branch 'main'
+                }
+            }
             steps {
                 container('test') {
                     script {
@@ -132,9 +136,11 @@ spec:
             steps {
                 container('docker') {
                     script {
-                        withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKER_HUB_CREDENTIALS')]) {
-                            sh "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin"
-                            sh "docker push $DOCKER_IMAGE_MAIN"
+                        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                            sh """
+                            echo $PASSWORD | docker login -u $USERNAME --password-stdin
+                            docker push $DOCKER_IMAGE_MAIN
+                            """
                         }
                     }
                 }
