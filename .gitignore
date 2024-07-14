@@ -5,3 +5,6 @@ pyvenv.cfg
 .env
 mongodb-conf.yaml
 .helmignore
+App/__pycache__/__init__.cpython-39.pyc
+App/__pycache__/app.cpython-39.pyc
+App/tests/__pycache__/

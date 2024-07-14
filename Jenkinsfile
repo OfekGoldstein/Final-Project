@@ -2,41 +2,35 @@ pipeline {
     agent {
         kubernetes {
             yaml """
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: jnlp
-    image: jenkins/inbound-agent
-    resources:
-      requests: {}
-  - name: docker
-    image: docker:20.10.8
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-    - name: docker-socket
-      mountPath: /var/run/docker.sock
-  - name: test
-    image: python:3.9-slim
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-    - name: docker-socket
-      mountPath: /var/run/docker.sock
-  - name: curl
-    image: curlimages/curl:latest
-    command:
-    - cat
-    tty: true
-  volumes:
-  - name: docker-socket
-    hostPath:
-      path: /var/run/docker.sock
-
-"""
+            apiVersion: v1
+            kind: Pod
+            spec:
+              containers:
+              - name: jnlp
+                image: jenkins/inbound-agent
+                resources:
+                  requests: {}
+              - name: docker
+                image: docker:20.10.8
+                command:
+                - cat
+                tty: true
+                volumeMounts:
+                - name: docker-socket
+                  mountPath: /var/run/docker.sock
+              - name: test
+                image: python:3.9-slim
+                command:
+                - cat
+                tty: true
+                volumeMounts:
+                - name: docker-socket
+                  mountPath: /var/run/docker.sock
+              volumes:
+              - name: docker-socket
+                hostPath:
+                  path: /var/run/docker.sock
+            """
         }
     }
     environment {
@@ -44,6 +38,7 @@ spec:
         PYTHONPATH = "${WORKSPACE}/App"
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
+        DOCKERHUB_USERNAME = 'ofekgoldstein'
     }
     stages {
         stage('Clone Repository') {
@@ -90,7 +85,7 @@ spec:
             }
         }
         
-        stage('Create merge request') {
+        stage('Create Merge Request') {
             when {
                 not {
                     branch 'main'
@@ -120,10 +115,38 @@ spec:
             steps {
                 container('docker') {
                     script {
-                        dir('App') {
-                            // Build Docker image for main branch
-                            sh "docker build -t $DOCKER_IMAGE_MAIN ."
-                        }
+                        // Read the current version
+                        def version = readFile('VERSION').trim()
+                        
+                        // Increment the version
+                        def (major, minor, patch) = version.tokenize('.')
+                        patch = (patch.toInteger() + 1).toString()
+                        def newVersion = "${major}.${minor}.${patch}"
+                        
+                        // Update the VERSION file with the new version
+                        writeFile(file: 'VERSION', text: newVersion)
+                        
+                        // Build Docker image with the new version
+                        sh "docker build -t $DOCKERHUB_USERNAME/final-project:${newVersion} -f App/Dockerfile ./App"
+                        
+                        // Update DOCKER_IMAGE_MAIN environment variable with the new version
+                        env.DOCKER_IMAGE_MAIN = "$DOCKERHUB_USERNAME/final-project:${newVersion}"
+                        
+                        // Configure git user
+                        sh "git config --global user.email 'ofekgold16@gmail.com'"
+                        sh "git config --global user.name 'OfekGoldstein'"
+                        
+                        // Checkout the branch
+                        sh "git checkout main"
+                        
+                        // Add VERSION file
+                        sh "git add VERSION"
+                        
+                        // Commit the changes
+                        sh "git commit -m 'Increment version to ${newVersion}'"
+                        
+                        // Push to origin
+                        sh "git push origin main"
                     }
                 }
             }
@@ -147,14 +170,12 @@ spec:
             }
         }
     }
-    
+
     post {
         success {
-            // Actions to perform on pipeline success
             echo "Pipeline completed successfully."
         }
         failure {
-            // Actions to perform on pipeline failure
             echo "Pipeline failed."
         }
     }
