@@ -103,7 +103,7 @@ spec:
                         def pullRequestBody = "Automatically generated merge request for branch ${branchName}"
 
                         sh """
-                            curl -X POST -H "Authorization: token ${PASSWORD}" \
+                            curl -X POST -H "Authorization: ${github_cred}" \
                             -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "${branchName}", "base": "main" }' \
                             ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
                         """
