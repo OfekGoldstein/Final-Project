@@ -110,9 +110,9 @@ spec:
         }
         
         stage('Main Branch Build') {
-            when {
-                branch 'main'
-            }
+//            when {
+//                branch 'main'
+//            }
             steps {
                 container('docker') {
                     script {
