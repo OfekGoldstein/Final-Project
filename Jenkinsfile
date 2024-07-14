@@ -2,40 +2,40 @@ pipeline {
     agent {
         kubernetes {
             yaml """
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: jnlp
-    image: jenkins/inbound-agent
-    resources:
-      requests: {}
-  - name: docker
-    image: docker:20.10.8
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-    - name: docker-socket
-      mountPath: /var/run/docker.sock
-  - name: test
-    image: python:3.9-slim
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-    - name: docker-socket
-      mountPath: /var/run/docker.sock
-  - name: curl
-    image: curlimages/curl:latest
-    command:
-    - cat
-    tty: true
-  volumes:
-  - name: docker-socket
-    hostPath:
-      path: /var/run/docker.sock
-"""
+            apiVersion: v1
+            kind: Pod
+            spec:
+              containers:
+              - name: jnlp
+                image: jenkins/inbound-agent
+                resources:
+                  requests: {}
+              - name: docker
+                image: docker:20.10.8
+                command:
+                - cat
+                tty: true
+                volumeMounts:
+                - name: docker-socket
+                  mountPath: /var/run/docker.sock
+              - name: test
+                image: python:3.9-slim
+                command:
+                - cat
+                tty: true
+                volumeMounts:
+                - name: docker-socket
+                  mountPath: /var/run/docker.sock
+              - name: curl
+                image: curlimages/curl:latest
+                command:
+                - cat
+                tty: true
+              volumes:
+              - name: docker-socket
+                hostPath:
+                  path: /var/run/docker.sock
+            """
         }
     }
     environment {
@@ -160,20 +160,21 @@ spec:
         }
     }
     
-post {
-    always {
-        script {
-            def branch = env.BRANCH_NAME ?: env.GIT_BRANCH.split('/')[1]
-            def version = readFile('VERSION').trim()
-            sh """
-            git config --global user.email "ofekgold16@gmail.com"
-            git config --global user.name "OfekGoldstein"
-            git checkout ${branch}
-            git add VERSION
-            git commit -m "Increment version to ${version}"
-            git push origin ${branch}
-            """
+    post {
+        always {
+            script {
+                def branch = env.BRANCH_NAME ?: env.GIT_BRANCH.split('/')[1]
+                def version = readFile('VERSION').trim()
+                sh """
+                git config --global user.email "ofekgold16@gmail.com"
+                git config --global user.name "OfekGoldstein"
+                git checkout ${branch}
+                git add VERSION
+                git commit -m "Increment version to ${version}"
+                git push origin ${branch}
+                """
+            }
+            echo "Post-build actions completed."
         }
-        echo "Post-build actions completed."
     }
- }
+}
