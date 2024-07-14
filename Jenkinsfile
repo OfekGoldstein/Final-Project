@@ -96,14 +96,14 @@ spec:
                 }
             }
             steps {
-                withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_PAT')]) {
+                withCredentials([string(credentialsId: 'github-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
                         def branchName = env.BRANCH_NAME
                         def pullRequestTitle = "Merge ${branchName} into main"
                         def pullRequestBody = "Automatically generated merge request for branch ${branchName}"
 
                         sh """
-                            curl -X POST -H "Authorization: token ${GITHUB_PAT}" \
+                            curl -X POST -H "Authorization: token ${github_cred}" \
                             -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "${branchName}", "base": "main" }' \
                             ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
                         """
