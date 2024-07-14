@@ -53,6 +53,11 @@ spec:
         }
         
         stage('Setup Environment') {
+            when {
+                not {
+                    branch 'main'
+                }
+            }
             steps {
                 container('test') {
                     script {
