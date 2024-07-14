@@ -103,12 +103,13 @@ spec:
                     def PullRequestBody = "Automatically generated pull request to merge ${BranchName} into ${mainBranch}"
 
                     sh """
-                        curl -u ${GIT_USER}:${GIT_PASSWORD} -X POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/OfekGoldstein/Final-Project/pulls -d '{
-                        "title": "${PullRequestTitle}",
-                        "body": "${PullRequestBody}",
-                        "head": "${BranchName}",
-                        "base": "${mainBranch}"
-                        }'
+                        curl -L \
+                          -X POST \
+                          -H "Accept: application/vnd.github+json" \
+                          -H "Authorization: Bearer bgLOPhFt0hgc8zfWnTfjj9h2VP2c0K3TVcna" \
+                          -H "X-GitHub-Api-Version: 2022-11-28" \
+                          https://api.github.com/repos/OfekGoldstein/Final-Project/pulls \
+                          -d '{"title":"Amazing new feature","body":"Please pull these awesome changes in!","head":"feature","base":"master"}'
                     """
                 }
             }
