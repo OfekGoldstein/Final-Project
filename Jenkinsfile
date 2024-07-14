@@ -44,6 +44,7 @@ spec:
         PYTHONPATH = "${WORKSPACE}/App"
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
+        DOCKERHUB_USERNAME = 'ofekgoldstein'
     }
     stages {
         stage('Clone Repository') {
@@ -120,10 +121,22 @@ spec:
             steps {
                 container('docker') {
                     script {
-                        dir('App') {
-                            // Build Docker image for main branch
-                            sh "docker build -t $DOCKER_IMAGE_MAIN ."
-                        }
+                        // Read the current version
+                        def version = readFile('VERSION').trim()
+                        
+                        // Increment the version
+                        def (major, minor, patch) = version.tokenize('.')
+                        patch = (patch.toInteger() + 1).toString()
+                        def newVersion = "${major}.${minor}.${patch}"
+                        
+                        // Update the VERSION file with the new version
+                        writeFile(file: 'VERSION', text: newVersion)
+                        
+                        // Build Docker image with the new version
+                        sh "docker build -t $DOCKERHUB_USERNAME/final-project:${newVersion} -f App/Dockerfile ./App"
+                        
+                        // Update DOCKER_IMAGE_MAIN environment variable with the new version
+                        env.DOCKER_IMAGE_MAIN = "$DOCKERHUB_USERNAME/final-project:${newVersion}"
                     }
                 }
             }
@@ -149,13 +162,22 @@ spec:
     }
     
     post {
-        success {
-            // Actions to perform on pipeline success
-            echo "Pipeline completed successfully."
+    success {
+        // Commit the updated VERSION file back to the repository
+        script {
+            def branch = env.GIT_BRANCH.split('/')[1]
+            sh """
+            git config --global user.email "ofekgold16@gmail.com"
+            git config --global user.name "OfekGoldstein"
+            git checkout ${branch}
+            git add VERSION
+            git commit -m "Increment version to ${newVersion}"
+            git push origin ${branch}
+            """
         }
-        failure {
-            // Actions to perform on pipeline failure
-            echo "Pipeline failed."
-        }
+        echo "Pipeline completed successfully."
+    }
+    failure {
+        echo "Pipeline failed."
     }
 }
