@@ -96,7 +96,7 @@ spec:
                 }
             }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'github-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
                         def branchName = "feature"
                         def pullRequestTitle = "Merge ${branchName} into main"
