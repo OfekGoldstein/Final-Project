@@ -105,7 +105,7 @@ spec:
                         sh """
                             curl -X POST -H "Authorization: ${PASSWORD}" \
                             -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "${branchName}", "base": "main" }' \
-                            ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
+                            https://api.github.com/repos/OfekGoldstein/Final-Project/pulls
                         """
                     }
                 }
@@ -114,6 +114,8 @@ spec:
         }
     }
 }
+//                            ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
+
 
         stage('Main Branch Build') {
             when {
