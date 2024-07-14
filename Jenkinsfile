@@ -98,7 +98,7 @@ spec:
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
-                        def branchName = env.BRANCH_NAME
+                        def branchName = "feature"
                         def pullRequestTitle = "Merge ${branchName} into main"
                         def pullRequestBody = "Automatically generated merge request for branch ${branchName}"
 
