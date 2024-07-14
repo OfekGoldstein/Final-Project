@@ -161,23 +161,21 @@ spec:
     }
     
     post {
-        success {
+        always {
             // Commit the updated VERSION file back to the repository
             script {
                 def branch = env.GIT_BRANCH.split('/')[1]
+                def version = readFile('VERSION').trim()
                 sh """
                 git config --global user.email "ofekgold16@gmail.com"
                 git config --global user.name "OfekGoldstein"
                 git checkout ${branch}
                 git add VERSION
-                git commit -m "Increment version to ${newVersion}"
+                git commit -m "Increment version to ${version}"
                 git push origin ${branch}
                 """
             }
-            echo "Pipeline completed successfully."
-        }
-        failure {
-            echo "Pipeline failed."
+            echo "Post-build actions completed."
         }
     }
 }
