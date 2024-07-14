@@ -46,7 +46,7 @@ spec:
         DOCKERHUB_USERNAME = 'ofekgoldstein'
         PYTHONPATH = "${WORKSPACE}/App"
         GITHUB_API_URL = 'https://api.github.com'
-        GITHUB_REPO = 'OfekGoldstein/Final-Project'
+        GITHUB_REPO = 'OfekGoldstein/final-project'
     }
     stages {
         
@@ -103,13 +103,9 @@ spec:
                         def pullRequestBody = "Automatically generated merge request for branch ${branchName}"
 
                         sh """
-                            curl -L \
-                            -X POST \
-                            -H "Accept: application/vnd.github+json" \
-                            -H "Authorization: Bearer B0aqNRtgLAyUMMhfEkHO8L7JqfQV0O2uAC5n" \
-                            -H "X-GitHub-Api-Version: 2022-11-28" \
-                            https://api.github.com/repos/OfekGoldstein/Final-Project/pulls \
-                            -d '{"title":"Amazing new feature","body":"Please pull these awesome changes in!","head":"feature","base":"main"}'
+                            curl -X POST -u ${PASSWORD}:x-oauth-basic \
+                            -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "feature", "base": "main" }' \
+                            ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
                         """
                     }
                 }
