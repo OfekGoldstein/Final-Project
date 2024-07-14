@@ -163,8 +163,7 @@ spec:
 post {
     always {
         script {
-            // Commit the updated VERSION file back to the repository
-            def branch = env.BRANCH_NAME ?: env.GIT_BRANCH.split('/')[1]  // Adjusted to handle both Multibranch and GitSCM
+            def branch = env.BRANCH_NAME ?: env.GIT_BRANCH.split('/')[1]
             def version = readFile('VERSION').trim()
             sh """
             git config --global user.email "ofekgold16@gmail.com"
