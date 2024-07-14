@@ -46,7 +46,7 @@ spec:
         DOCKERHUB_USERNAME = 'ofekgoldstein'
         PYTHONPATH = "${WORKSPACE}/App"
         GITHUB_API_URL = 'https://api.github.com'
-        GITHUB_REPO = 'OfekGoldstein/final-project'
+        GITHUB_REPO = 'OfekGoldstein/Final-Project'
     }
     stages {
         
