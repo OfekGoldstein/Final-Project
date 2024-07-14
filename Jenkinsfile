@@ -47,7 +47,6 @@ spec:
         PYTHONPATH = "${WORKSPACE}/App"
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
-        GITHUB_CREDS = credentials('github-creds')
     }
     stages {
         
@@ -104,7 +103,7 @@ spec:
                         def pullRequestBody = "Automatically generated merge request for branch ${branchName}"
 
                         sh """
-                            curl -X POST -u ${GITHUB_CREDS}:x-oauth-basic \
+                            curl -X POST -u ${PASSWORD}:x-oauth-basic \ 
                             -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "feature", "base": "main" }' \
                             ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
                         """
