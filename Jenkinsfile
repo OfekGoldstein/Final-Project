@@ -35,7 +35,6 @@ spec:
   - name: docker-socket
     hostPath:
       path: /var/run/docker.sock
-
 """
         }
     }
@@ -162,22 +161,23 @@ spec:
     }
     
     post {
-    success {
-        // Commit the updated VERSION file back to the repository
-        script {
-            def branch = env.GIT_BRANCH.split('/')[1]
-            sh """
-            git config --global user.email "ofekgold16@gmail.com"
-            git config --global user.name "OfekGoldstein"
-            git checkout ${branch}
-            git add VERSION
-            git commit -m "Increment version to ${newVersion}"
-            git push origin ${branch}
-            """
+        success {
+            // Commit the updated VERSION file back to the repository
+            script {
+                def branch = env.GIT_BRANCH.split('/')[1]
+                sh """
+                git config --global user.email "ofekgold16@gmail.com"
+                git config --global user.name "OfekGoldstein"
+                git checkout ${branch}
+                git add VERSION
+                git commit -m "Increment version to ${newVersion}"
+                git push origin ${branch}
+                """
+            }
+            echo "Pipeline completed successfully."
         }
-        echo "Pipeline completed successfully."
-    }
-    failure {
-        echo "Pipeline failed."
+        failure {
+            echo "Pipeline failed."
+        }
     }
 }
