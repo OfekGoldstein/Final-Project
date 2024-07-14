@@ -98,13 +98,13 @@ spec:
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
-                        def branchName = "feature"
+                        def branchName = "feature"      
                         def pullRequestTitle = "Merge ${branchName} into main"
                         def pullRequestBody = "Automatically generated merge request for branch ${branchName}"
 
                         sh """
-                            curl -X POST -u ${PASSWORD}:x-oauth-basic \ 
-                            -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "feature", "base": "main" }' \
+                            curl -X POST -u ${PASSWORD}:x-oauth-basic \
+                            -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "${branchName}", "base": "main" }' \
                             ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
                         """
                     }
