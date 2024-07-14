@@ -40,13 +40,13 @@ spec:
         }
     }
     environment {
-        DOCKER_HUB_CREDENTIALS = 'HxTiSCxTaCEznCZZWbevb7Zy3MM' // Correct Docker Hub credentials ID
+        DOCKER_HUB_CREDENTIALS = withCredentials('dockerhub-token') // Correct Docker Hub credentials ID
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
         GITHUB_PAT = 'bgLOPhFt0hgc8zfWnTfjj9h2VP2c0K3TVcna' // Ensure this is your actual GitHub PAT credential ID
         DOCKERHUB_USERNAME = 'ofekgoldstein'
         PYTHONPATH = "${WORKSPACE}/App"
-        GIT_USER = "OfekGoldstein"
-        GIT_PASSWORD = "Ofek1167"
+        GITHUB_API_URL = 'https://api.github.com'
+        GITHUB_REPO = 'OfekGoldstein/Final-Project'
     }
     stages {
         
@@ -89,34 +89,32 @@ spec:
             }
         }
         
-        stage("Create Merge Request") {
+        stage('Create merge request'){
             when {
-                expression {
-                    return !env.BRANCH_NAME.equals('main')
+                not {
+                    branch 'main'
                 }
             }
             steps {
-                script {
-                    def BranchName = env.BRANCH_NAME
-                    def mainBranch = "main"
-                    def PullRequestTitle = "Merge ${BranchName} into ${mainBranch}"
-                    def PullRequestBody = "Automatically generated pull request to merge ${BranchName} into ${mainBranch}"
+                withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_PAT')]) {
+                    script {
+                        def branchName = env.BRANCH_NAME
+                        def pullRequestTitle = "Merge ${branchName} into main"
+                        def pullRequestBody = "Automatically generated merge request for branch ${branchName}"
 
-                    sh """
-                        curl -L \
-                          -X POST \
-                          -H "Accept: application/vnd.github+json" \
-                          -H "Authorization: Bearer bgLOPhFt0hgc8zfWnTfjj9h2VP2c0K3TVcna" \
-                          -H "X-GitHub-Api-Version: 2022-11-28" \
-                          https://api.github.com/repos/OfekGoldstein/Final-Project/pulls \
-                          -d '{"title":"Amazing new feature","body":"Please pull these awesome changes in!","head":"feature","base":"master"}'
-                    """
+                        sh """
+                            curl -X POST -H "Authorization: token ${GITHUB_PAT}" \
+                            -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "${branchName}", "base": "main" }' \
+                            ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
+                        """
+                    }
                 }
             }
+
         }
     }
 }
-        
+
         stage('Main Branch Build') {
             when {
                 branch 'main'
@@ -140,7 +138,7 @@ spec:
             steps {
                 container('docker') {
                     script {
-                        withCredentials([string(credentialsId: 'DOCKER_HUB_CREDENTIALS', variable: 'DOCKER_HUB_PASSWORD')]) {
+                        withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKER_HUB_CREDENTIALS')]) {
                             sh "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin"
                             sh "docker push $DOCKER_IMAGE_MAIN"
                         }
