@@ -160,22 +160,21 @@ spec:
         }
     }
     
-    post {
-        always {
+post {
+    always {
+        script {
             // Commit the updated VERSION file back to the repository
-            script {
-                def branch = env.GIT_BRANCH.split('/')[1]
-                def version = readFile('VERSION').trim()
-                sh """
-                git config --global user.email "ofekgold16@gmail.com"
-                git config --global user.name "OfekGoldstein"
-                git checkout ${branch}
-                git add VERSION
-                git commit -m "Increment version to ${version}"
-                git push origin ${branch}
-                """
-            }
-            echo "Post-build actions completed."
+            def branch = env.BRANCH_NAME ?: env.GIT_BRANCH.split('/')[1]  // Adjusted to handle both Multibranch and GitSCM
+            def version = readFile('VERSION').trim()
+            sh """
+            git config --global user.email "ofekgold16@gmail.com"
+            git config --global user.name "OfekGoldstein"
+            git checkout ${branch}
+            git add VERSION
+            git commit -m "Increment version to ${version}"
+            git push origin ${branch}
+            """
         }
+        echo "Post-build actions completed."
     }
 }
