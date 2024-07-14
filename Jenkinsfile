@@ -26,11 +26,6 @@ pipeline {
                 volumeMounts:
                 - name: docker-socket
                   mountPath: /var/run/docker.sock
-              - name: curl
-                image: curlimages/curl:latest
-                command:
-                - cat
-                tty: true
               volumes:
               - name: docker-socket
                 hostPath:
@@ -90,7 +85,7 @@ pipeline {
             }
         }
         
-        stage('Create merge request') {
+        stage('Create Merge Request') {
             when {
                 not {
                     branch 'main'
@@ -136,6 +131,22 @@ pipeline {
                         
                         // Update DOCKER_IMAGE_MAIN environment variable with the new version
                         env.DOCKER_IMAGE_MAIN = "$DOCKERHUB_USERNAME/final-project:${newVersion}"
+                        
+                        // Configure git user
+                        sh "git config --global user.email 'ofekgold16@gmail.com'"
+                        sh "git config --global user.name 'OfekGoldstein'"
+                        
+                        // Checkout the branch
+                        sh "git checkout main"
+                        
+                        // Add VERSION file
+                        sh "git add VERSION"
+                        
+                        // Commit the changes
+                        sh "git commit -m 'Increment version to ${newVersion}'"
+                        
+                        // Push to origin
+                        sh "git push origin main"
                     }
                 }
             }
@@ -159,22 +170,13 @@ pipeline {
             }
         }
     }
-    
+}
+
     post {
-        always {
-            script {
-                def branch = env.BRANCH_NAME ?: env.GIT_BRANCH.split('/')[1]
-                def version = readFile('VERSION').trim()
-                sh """
-                git config --global user.email "ofekgold16@gmail.com"
-                git config --global user.name "OfekGoldstein"
-                git checkout ${branch}
-                git add VERSION
-                git commit -m "Increment version to ${version}"
-                git push origin ${branch}
-                """
-            }
-            echo "Post-build actions completed."
+        success {
+            echo "Pipeline completed successfully."
+        }
+        failure {
+            echo "Pipeline failed."
         }
     }
-}
