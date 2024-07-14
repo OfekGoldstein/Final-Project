@@ -98,18 +98,14 @@ spec:
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
-                        def branchName = "feature"
+                        def branchName = "feature"      
                         def pullRequestTitle = "Merge ${branchName} into main"
                         def pullRequestBody = "Automatically generated merge request for branch ${branchName}"
 
                         sh """
-                            curl -L \
-                            -X POST \
-                            -H "Accept: application/vnd.github+json" \
-                            -H "Authorization: Bearer B0aqNRtgLAyUMMhfEkHO8L7JqfQV0O2uAC5n" \
-                            -H "X-GitHub-Api-Version: 2022-11-28" \
-                            https://api.github.com/repos/OfekGoldstein/Final-Project/pulls \
-                            -d '{"title":"Amazing new feature","body":"Please pull these awesome changes in!","head":"feature","base":"main"}'
+                            curl -X POST -u ${PASSWORD}:x-oauth-basic \
+                            -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "${branchName}", "base": "main" }' \
+                            ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
                         """
                     }
                 }
