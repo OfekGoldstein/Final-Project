@@ -44,10 +44,6 @@ pipeline {
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
         DOCKERHUB_USERNAME = 'ofekgoldstein'
-    }
-    triggers {
-        pollSCM('H/1 * * * *') // Check every minute
-    }
     stages {
         stage('Clone Repository') {
             steps {
