@@ -45,6 +45,10 @@ pipeline {
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
         DOCKERHUB_USERNAME = 'ofekgoldstein'
+        // Initialize initial version
+        MAJOR_VERSION = 0
+        MINOR_VERSION = 1
+        PATCH_VERSION = 0
     }
     
     stages {  
@@ -133,8 +137,14 @@ pipeline {
             steps {
                 container('docker') {
                     script {
-                        // Build Docker image with the version specified by Jenkins BUILD_NUMBER
-                        def dockerImage = "${DOCKER_IMAGE_MAIN}:${BUILD_NUMBER}"
+                        // Calculate the new version based on Jenkins build number
+                        def newVersion = "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
+            
+                        // Increment the patch version for next build
+                        PATCH_VERSION++
+            
+                        // Build Docker image with the new version
+                        def dockerImage = "${DOCKER_IMAGE_MAIN}:${newVersion}"
                         sh "docker build -t ${dockerImage} -f App/Dockerfile ./App"
             
                         // Update DOCKER_IMAGE_MAIN environment variable with the new version
@@ -143,9 +153,7 @@ pipeline {
                 }
             }
         }
-        
-        // Add other stages as needed
-        
+                
         stage('Push to Docker Hub') {
             when {
                 branch 'main'
@@ -154,9 +162,10 @@ pipeline {
                 container('docker') {
                     script {
                         withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                            // Push Docker image to Docker Hub with the new version
                             sh """
                             echo $PASSWORD | docker login -u $USERNAME --password-stdin
-                            docker push ${DOCKER_IMAGE_MAIN}:${env.BUILD_NUMBER}
+                            docker push ${DOCKER_IMAGE_MAIN}:${newVersion}
                             """
                         }
                     }
