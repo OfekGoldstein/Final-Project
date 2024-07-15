@@ -175,6 +175,12 @@ pipeline {
                             
                             // Add the workspace directory to safe directories
                             sh "git config --global --add safe.directory ${WORKSPACE}"
+
+                            // Add VERSION file
+                            sh "git add VERSION"
+                            
+                            // Commit the changes
+                            sh "git commit -m 'Increment version to ${newVersion}'"
                             
                             // Checkout the branch
                             sh "git checkout main"
