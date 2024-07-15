@@ -256,6 +256,5 @@ def getPullRequests() {
         username: USERNAME,
         password: PASSWORD
     )
-
-    return readJSON text: response.content
 }
+    return readJSON text: response.content
