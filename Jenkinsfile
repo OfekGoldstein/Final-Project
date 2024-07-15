@@ -127,79 +127,32 @@ pipeline {
         }
         
         stage('Main Branch Build') {
-    when {
-        branch 'main'
-    }
-    steps {
-        container('docker') {
-            script {
-                def versionFile = 'VERSION'  // Adjust the path if necessary
-                
-                // Read the current version
-                def version = readFile(versionFile).trim()
-                
-                // Increment the version
-                def (major, minor, patch) = version.tokenize('.')
-                patch = (patch.toInteger() + 1).toString()
-                def newVersion = "${major}.${minor}.${patch}"
-                
-                // Update the VERSION file with the new version
-                writeFile(file: versionFile, text: newVersion)
-                
-                // Build Docker image with the new version
-                def dockerImage = "${DOCKER_IMAGE_MAIN}:${newVersion}"
-                sh "docker build -t ${dockerImage} -f App/Dockerfile ./App"
-                
-                // Update DOCKER_IMAGE_MAIN environment variable with the new version
-                env.DOCKER_IMAGE = dockerImage
-                
-                // Pass newVersion to the next stage
-                currentBuild.description = newVersion
+            when {
+                branch 'main'
+            }
+            steps {
+                container('docker') {
+                    script {
+                        def buildNumber = env.BUILD_NUMBER
+            
+                        // Build Docker image with the build number as part of the tag
+                        def dockerImage = "${DOCKER_IMAGE_MAIN}:${buildNumber}"
+                        sh "docker build -t ${dockerImage} -f App/Dockerfile ./App"
+            
+                        // Update DOCKER_IMAGE_MAIN environment variable with the new version
+                        env.DOCKER_IMAGE = dockerImage
+            
+                        // Pass buildNumber to the next stage (optional)
+                        currentBuild.description = buildNumber
+            
+                        // Debugging output (optional)
+                        echo "Docker image built: ${dockerImage}"
                     }
                 }
             }
         }
         
-        stage('Git Operations') {
-            when {
-                branch 'main'
-            }
-            steps {
-                container('git') {
-                    script {
-                        withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                            // Add the workspace directory to safe directories
-                            sh "git config --global --add safe.directory ${WORKSPACE}"
-                            
-                            // Stash changes in the VERSION file
-                            sh 'git stash'
- 
-                            // Checkout the branch
-                            sh "git checkout main"
-
-                            // Apply stashed changes
-                            sh 'git stash apply'                            
-                            
-                            // Retrieve newVersion from the previous stage
-                            def newVersion = currentBuild.description
-                            
-                            // Configure git user
-                            sh "git config --global user.email 'ofekgold16@gmail.com'"
-                            sh "git config --global user.name 'OfekGoldstein'"
-                            
-                            // Add VERSION file
-                            sh "git add VERSION"
-                            
-                            // Commit the changes
-                            sh "git commit -m 'Increment version to ${newVersion}'"
-                            
-                            // Push to origin
-                            sh "git push https://${USERNAME}:${PASSWORD}@github.com/${GITHUB_REPO}.git main"
-                        }
-                    }
-                }
-            }
-        }
+        // Add other stages as needed
         
         stage('Push to Docker Hub') {
             when {
@@ -211,7 +164,7 @@ pipeline {
                         withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                             sh """
                             echo $PASSWORD | docker login -u $USERNAME --password-stdin
-                            docker push $DOCKER_IMAGE
+                            docker push ${DOCKER_IMAGE_MAIN}:${env.BUILD_NUMBER}
                             """
                         }
                     }
