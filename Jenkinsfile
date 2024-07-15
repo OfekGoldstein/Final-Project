@@ -186,10 +186,10 @@ pipeline {
                             sh "git checkout main"
                             
                             // Add VERSION file
-                            sh "git add VERSION"
+                            //sh "git add VERSION"
                             
                             // Commit the changes
-                            sh "git commit -m 'Increment version to ${newVersion}'"
+                           // sh "git commit -m 'Increment version to ${newVersion}'"
                             
                             // Push to origin
                             sh "git push https://${USERNAME}:${PASSWORD}@github.com/${GITHUB_REPO}.git main"
