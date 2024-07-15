@@ -133,7 +133,7 @@ pipeline {
     steps {
         container('docker') {
             script {
-                def versionFile = 'App/VERSION'  // Adjust the path if necessary
+                def versionFile = 'VERSION'  // Adjust the path if necessary
                 
                 // Read the current version
                 def version = readFile(versionFile).trim()
