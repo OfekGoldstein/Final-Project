@@ -26,6 +26,11 @@ pipeline {
                 volumeMounts:
                 - name: docker-socket
                   mountPath: /var/run/docker.sock
+              - name: git
+                image: alpine/git
+                command:
+                - cat
+                tty: true
               volumes:
               - name: docker-socket
                 hostPath:
@@ -131,7 +136,18 @@ pipeline {
                         
                         // Update DOCKER_IMAGE_MAIN environment variable with the new version
                         env.DOCKER_IMAGE_MAIN = "$DOCKERHUB_USERNAME/final-project:${newVersion}"
-                        
+                    }
+                }
+            }
+        }
+        
+        stage('Git Operations') {
+            when {
+                branch 'main'
+            }
+            steps {
+                container('git') {
+                    script {
                         // Configure git user
                         sh "git config --global user.email 'ofekgold16@gmail.com'"
                         sh "git config --global user.name 'OfekGoldstein'"
