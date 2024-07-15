@@ -46,6 +46,21 @@ pipeline {
         DOCKERHUB_USERNAME = 'ofekgoldstein'
     }
     stages {
+                stage('Check Feature Branch') {
+            steps {
+                script {
+                    def commits = sh(script: "git ls-remote origin refs/heads/feature | cut -f 1", returnStdout: true).trim()
+                    
+                    if (commits) {
+                        echo "New commits detected in the feature branch. Triggering feature pipeline..."
+                        build job: 'Feature Pipeline', parameters: [string(name: 'BRANCH_NAME', value: 'feature')]
+                    } else {
+                        echo "No new commits detected in the feature branch."
+                    }
+                }
+            }
+        }
+        
         stage('Clone Repository') {
             steps {
                 git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
