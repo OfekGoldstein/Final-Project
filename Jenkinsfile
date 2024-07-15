@@ -166,6 +166,15 @@ pipeline {
                 container('git') {
                     script {
                         withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                            // Stash changes in the VERSION file
+                            sh 'git stash'
+ 
+                            // Checkout the branch
+                            sh "git checkout main"
+
+                            // Apply stashed changes
+                            sh 'git stash apply'                            
+                            
                             // Retrieve newVersion from the previous stage
                             def newVersion = currentBuild.description
                             
@@ -175,9 +184,6 @@ pipeline {
                             
                             // Add the workspace directory to safe directories
                             sh "git config --global --add safe.directory ${WORKSPACE}"
-                            
-                            // Checkout the branch
-                            sh "git checkout main"
                             
                             // Add VERSION file
                             sh "git add VERSION"
