@@ -38,26 +38,26 @@ pipeline {
             """
         }
     }
-    
+
     environment {
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project'
         PYTHONPATH = "${WORKSPACE}/App"
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
         DOCKERHUB_USERNAME = 'ofekgoldstein'
-        // Initialize initial version
-        MAJOR_VERSION = 0
-        MINOR_VERSION = 1
-        PATCH_VERSION = 0
+        BASE_VERSION = '0.1.0'
+        MAJOR_VERSION = '0'
+        MINOR_VERSION = '1'
+        PATCH_VERSION = '0'
     }
-    
-    stages {  
+
+    stages {
         stage('Clone Repository') {
             steps {
                 git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
             }
         }
-        
+
         stage('Setup Environment') {
             when {
                 not {
@@ -78,7 +78,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Feature Branch Test') {
             when {
                 not {
@@ -95,7 +95,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Create Merge Request') {
             when {
                 not {
@@ -129,7 +129,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Main Branch Build') {
             when {
                 branch 'main'
@@ -140,20 +140,25 @@ pipeline {
                         // Calculate the new version based on Jenkins build number
                         env.NEW_VERSION = "${env.MAJOR_VERSION}.${env.MINOR_VERSION}.${env.PATCH_VERSION}"
             
-                        // Increment the patch version for next build
-                        PATCH_VERSION++
-            
                         // Build Docker image with the new version
                         def dockerImage = "${DOCKER_IMAGE_MAIN}:${env.NEW_VERSION}"
                         sh "docker build -t ${dockerImage} -f App/Dockerfile ./App"
             
+                        // Increment the patch version for next build
+                        def newPatchVersion = env.PATCH_VERSION.toInteger() + 1
+                        env.PATCH_VERSION = newPatchVersion.toString()
+            
                         // Update DOCKER_IMAGE_MAIN environment variable with the new version
                         env.DOCKER_IMAGE = dockerImage
+
+                        // Log the new version
+                        echo "New version: ${env.NEW_VERSION}"
+                        echo "Incremented patch version for next build: ${env.PATCH_VERSION}"
                     }
                 }
             }
         }
-                
+
         stage('Push to Docker Hub') {
             when {
                 branch 'main'
@@ -165,7 +170,7 @@ pipeline {
                             // Push Docker image to Docker Hub with the new version
                             sh """
                             echo $PASSWORD | docker login -u $USERNAME --password-stdin
-                            docker push ${DOCKER_IMAGE_MAIN}:${env.NEW_VERSION}
+                            docker push ${DOCKER_IMAGE}
                             """
                         }
                     }
