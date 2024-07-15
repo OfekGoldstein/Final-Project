@@ -45,36 +45,9 @@ pipeline {
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
         DOCKERHUB_USERNAME = 'ofekgoldstein'
-        LAST_KNOWN_STATUS = [:]
     }
     
-    stages {
-        stage('Scan GitHub Pull Requests') {
-            triggers {
-                cron('*/1 * * * *')  // Runs every minute
-            }
-            
-            steps {
-                script {
-                    def pullRequests = getPullRequests()
-
-                    for (pullRequest in pullRequests) {
-                        def prNumber = pullRequest.number
-                        def currentStatus = pullRequest.state
-                        def lastStatus = LAST_KNOWN_STATUS[prNumber] ?: ''
-
-                        if (currentStatus == 'merged' && lastStatus == 'open') {
-                            echo "Pull Request ${prNumber} merged! Triggering main pipeline..."
-
-                            build job: 'main-pipeline', parameters: [string(name: 'PR_NUMBER', value: "${prNumber}")]
-                        }
-
-                        LAST_KNOWN_STATUS[prNumber] = currentStatus
-                    }
-                }
-            }
-        }
-        
+    stages {  
         stage('Clone Repository') {
             steps {
                 git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
@@ -248,13 +221,3 @@ pipeline {
         }
     }
 }
-
-def getPullRequests() {
-    def response = httpRequest(
-        url: "${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls",
-        authentication: 'BASIC',
-        username: USERNAME,
-        password: PASSWORD
-    )
-}
-    return readJSON text: response.content
