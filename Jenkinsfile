@@ -166,6 +166,9 @@ pipeline {
                 container('git') {
                     script {
                         withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                            // Add the workspace directory to safe directories
+                            sh "git config --global --add safe.directory ${WORKSPACE}"
+                            
                             // Stash changes in the VERSION file
                             sh 'git stash'
  
@@ -181,9 +184,6 @@ pipeline {
                             // Configure git user
                             sh "git config --global user.email 'ofekgold16@gmail.com'"
                             sh "git config --global user.name 'OfekGoldstein'"
-                            
-                            // Add the workspace directory to safe directories
-                            sh "git config --global --add safe.directory ${WORKSPACE}"
                             
                             // Add VERSION file
                             sh "git add VERSION"
