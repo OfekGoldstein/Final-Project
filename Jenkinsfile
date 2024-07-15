@@ -138,13 +138,13 @@ pipeline {
                 container('docker') {
                     script {
                         // Calculate the new version based on Jenkins build number
-                        def newVersion = "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
+                        env.NEW_VERSION = "${env.MAJOR_VERSION}.${env.MINOR_VERSION}.${env.PATCH_VERSION}"
             
                         // Increment the patch version for next build
                         PATCH_VERSION++
             
                         // Build Docker image with the new version
-                        def dockerImage = "${DOCKER_IMAGE_MAIN}:${newVersion}"
+                        def dockerImage = "${DOCKER_IMAGE_MAIN}:${env.NEW_VERSION}"
                         sh "docker build -t ${dockerImage} -f App/Dockerfile ./App"
             
                         // Update DOCKER_IMAGE_MAIN environment variable with the new version
@@ -165,7 +165,7 @@ pipeline {
                             // Push Docker image to Docker Hub with the new version
                             sh """
                             echo $PASSWORD | docker login -u $USERNAME --password-stdin
-                            docker push ${DOCKER_IMAGE_MAIN}:${newVersion}
+                            docker push ${DOCKER_IMAGE_MAIN}:${env.NEW_VERSION}
                             """
                         }
                     }
