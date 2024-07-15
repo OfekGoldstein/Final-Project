@@ -131,27 +131,29 @@ pipeline {
                 branch 'main'
             }
             steps {
-                script {
-                    // Read the current version
-                    def version = readFile('VERSION').trim()
+                container('docker') {
+                    script {
+                        // Read the current version
+                        def version = readFile('VERSION').trim()
             
-                    // Increment the version
-                    def (major, minor, patch) = version.tokenize('.')
-                    patch = (patch.toInteger() + 1).toString()
-                    def newVersion = "${major}.${minor}.${patch}"
+                        // Increment the version
+                        def (major, minor, patch) = version.tokenize('.')
+                        patch = (patch.toInteger() + 1).toString()
+                        def newVersion = "${major}.${minor}.${patch}"
             
-                    // Update the VERSION file with the new version
-                    writeFile(file: 'VERSION', text: newVersion)
+                        // Update the VERSION file with the new version
+                        writeFile(file: 'VERSION', text: newVersion)
             
-                    // Build Docker image with the new version
-                    def dockerImage = "${DOCKER_IMAGE_MAIN}:${newVersion}"
-                    sh "docker build -t ${dockerImage} -f App/Dockerfile ./App"
+                        // Build Docker image with the new version
+                        def dockerImage = "${DOCKER_IMAGE_MAIN}:${newVersion}"
+                        sh "docker build -t ${dockerImage} -f App/Dockerfile ./App"
             
-                    // Update DOCKER_IMAGE_MAIN environment variable with the new version
-                    env.DOCKER_IMAGE = dockerImage
+                        // Update DOCKER_IMAGE_MAIN environment variable with the new version
+                        env.DOCKER_IMAGE = dockerImage
             
-                    // Pass newVersion to the next stage
-                    currentBuild.description = newVersion
+                        // Pass newVersion to the next stage
+                        currentBuild.description = newVersion
+                    }
                 }
             }
         }
