@@ -39,7 +39,7 @@ pipeline {
         }
     }
     environment {
-        DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project:latest'
+        DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project'
         PYTHONPATH = "${WORKSPACE}/App"
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
@@ -132,10 +132,11 @@ pipeline {
                         writeFile(file: 'VERSION', text: newVersion)
                         
                         // Build Docker image with the new version
-                        sh "docker build -t $DOCKERHUB_USERNAME/final-project:${newVersion} -f App/Dockerfile ./App"
+                        def dockerImage = "${DOCKER_IMAGE_MAIN}:${newVersion}"
+                        sh "docker build -t ${dockerImage} -f App/Dockerfile ./App"
                         
                         // Update DOCKER_IMAGE_MAIN environment variable with the new version
-                        env.DOCKER_IMAGE_MAIN = "$DOCKERHUB_USERNAME/final-project:${newVersion}"
+                        env.DOCKER_IMAGE = dockerImage
                         
                         // Pass newVersion to the next stage
                         currentBuild.description = newVersion
@@ -189,7 +190,7 @@ pipeline {
                         withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                             sh """
                             echo $PASSWORD | docker login -u $USERNAME --password-stdin
-                            docker push $DOCKER_IMAGE_MAIN
+                            docker push $DOCKER_IMAGE
                             """
                         }
                     }
