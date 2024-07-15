@@ -133,20 +133,12 @@ pipeline {
             steps {
                 container('docker') {
                     script {
-                        def buildNumber = env.BUILD_NUMBER
-            
-                        // Build Docker image with the build number as part of the tag
-                        def dockerImage = "${DOCKER_IMAGE_MAIN}:${buildNumber}"
+                        // Build Docker image with the version specified by Jenkins BUILD_NUMBER
+                        def dockerImage = "${DOCKER_IMAGE_MAIN}:${BUILD_NUMBER}"
                         sh "docker build -t ${dockerImage} -f App/Dockerfile ./App"
             
                         // Update DOCKER_IMAGE_MAIN environment variable with the new version
                         env.DOCKER_IMAGE = dockerImage
-            
-                        // Pass buildNumber to the next stage (optional)
-                        currentBuild.description = buildNumber
-            
-                        // Debugging output (optional)
-                        echo "Docker image built: ${dockerImage}"
                     }
                 }
             }
