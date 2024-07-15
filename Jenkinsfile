@@ -40,15 +40,11 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project'
+        DOCKER_IMAGE = 'ofekgoldstein/final-project'
         PYTHONPATH = "${WORKSPACE}/App"
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
         DOCKERHUB_USERNAME = 'ofekgoldstein'
-        BASE_VERSION = '0.1.0'
-        MAJOR_VERSION = '0'
-        MINOR_VERSION = '1'
-        PATCH_VERSION = '0'
     }
 
     stages {
@@ -137,22 +133,9 @@ pipeline {
             steps {
                 container('docker') {
                     script {
-                        // Calculate the new version based on Jenkins build number
-                        env.NEW_VERSION = "${env.MAJOR_VERSION}.${env.MINOR_VERSION}.${env.PATCH_VERSION}"
-            
-                        // Build Docker image with the new version
-                        def dockerImage = "${DOCKER_IMAGE_MAIN}:${env.NEW_VERSION}"
+                        def dockerImage = "${DOCKER_IMAGE}:0.0.${env.BUILD_NUMBER}"
                         sh "docker build -t ${dockerImage} -f App/Dockerfile ./App"
-            
-                        // Increment the patch version for next build
-                        env.PATCH_VERSION = (env.PATCH_VERSION.toInteger() + 1).toString()
-            
-                        // Update DOCKER_IMAGE_MAIN environment variable with the new version
-                        env.DOCKER_IMAGE = dockerImage
-
-                        // Log the new version
-                        echo "New version: ${env.NEW_VERSION}"
-                        echo "Incremented patch version for next build: ${env.PATCH_VERSION}"
+                        //dockerImage = docker.build("${DOCKER_IMAGE}:0.0.${BUILD_NUMBER}", "--no-cache .")
                     }
                 }
             }
