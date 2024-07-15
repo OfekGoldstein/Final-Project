@@ -45,6 +45,9 @@ pipeline {
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
         DOCKERHUB_USERNAME = 'ofekgoldstein'
     }
+    triggers {
+        pollSCM('H/1 * * * *') // Check every minute
+    }
     stages {
         stage('Check Feature Branch') {
             steps {
