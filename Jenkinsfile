@@ -145,8 +145,7 @@ pipeline {
                         sh "docker build -t ${dockerImage} -f App/Dockerfile ./App"
             
                         // Increment the patch version for next build
-                        def newPatchVersion = env.PATCH_VERSION.toInteger() + 1
-                        env.PATCH_VERSION = newPatchVersion.toString()
+                        env.PATCH_VERSION = (env.PATCH_VERSION.toInteger() + 1).toString()
             
                         // Update DOCKER_IMAGE_MAIN environment variable with the new version
                         env.DOCKER_IMAGE = dockerImage
