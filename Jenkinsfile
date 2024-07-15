@@ -152,7 +152,7 @@ pipeline {
                             // Push Docker image to Docker Hub with the new version
                             sh """
                             echo $PASSWORD | docker login -u $USERNAME --password-stdin
-                            docker push ${DOCKER_IMAGE}
+                            docker push ${dockerImage}
                             """
                         }
                     }
