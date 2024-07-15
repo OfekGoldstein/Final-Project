@@ -38,13 +38,16 @@ pipeline {
             """
         }
     }
+    
     environment {
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project'
         PYTHONPATH = "${WORKSPACE}/App"
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
         DOCKERHUB_USERNAME = 'ofekgoldstein'
-    stages {
+    }
+    
+    stages {  
         stage('Clone Repository') {
             steps {
                 git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
@@ -102,11 +105,22 @@ pipeline {
                         def pullRequestTitle = "Merge ${branchName} into main"
                         def pullRequestBody = "Automatically generated merge request for branch ${branchName}"
 
-                        sh """
-                            curl -X POST -u ${USERNAME}:${PASSWORD} \
-                            -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "${branchName}", "base": "main" }' \
-                            ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
-                        """
+                        // Create the pull request
+                        def response = sh (
+                            script: """
+                                curl -s -X POST -u ${USERNAME}:${PASSWORD} \
+                                -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "${branchName}", "base": "main" }' \
+                                ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
+                            """,
+                            returnStdout: true
+                        ).trim()
+                        
+                        // Extract pull request number from the response
+                        def pullRequestNumber = readJSON text: response
+                        echo "Pull request created: ${GITHUB_REPO}/pull/${pullRequestNumber.number}"
+                        
+                        // Record pull request number for further use
+                        env.PULL_REQUEST_NUMBER = pullRequestNumber.number.toString()
                     }
                 }
             }
@@ -152,32 +166,32 @@ pipeline {
                 container('git') {
                     script {
                         withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        // Retrieve newVersion from the previous stage
-                        def newVersion = currentBuild.description
-                        
-                        // Configure git user
-                        sh "git config --global user.email 'ofekgold16@gmail.com'"
-                        sh "git config --global user.name 'OfekGoldstein'"
-                        
-                        // Add the workspace directory to safe directories
-                        sh "git config --global --add safe.directory ${WORKSPACE}"
-                        
-                        // Checkout the branch
-                        sh "git checkout main"
-                        
-                        // Add VERSION file
-                        sh "git add VERSION"
-                        
-                        // Commit the changes
-                        sh "git commit -m 'Increment version to ${newVersion}'"
-                        
-                        // Push to origin
-                        sh "git push https://${USERNAME}:${PASSWORD}@github.com/${GITHUB_REPO}.git main"
+                            // Retrieve newVersion from the previous stage
+                            def newVersion = currentBuild.description
+                            
+                            // Configure git user
+                            sh "git config --global user.email 'ofekgold16@gmail.com'"
+                            sh "git config --global user.name 'OfekGoldstein'"
+                            
+                            // Add the workspace directory to safe directories
+                            sh "git config --global --add safe.directory ${WORKSPACE}"
+                            
+                            // Checkout the branch
+                            sh "git checkout main"
+                            
+                            // Add VERSION file
+                            sh "git add VERSION"
+                            
+                            // Commit the changes
+                            sh "git commit -m 'Increment version to ${newVersion}'"
+                            
+                            // Push to origin
+                            sh "git push https://${USERNAME}:${PASSWORD}@github.com/${GITHUB_REPO}.git main"
+                        }
                     }
                 }
             }
         }
-    }
         
         stage('Push to Docker Hub') {
             when {
