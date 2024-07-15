@@ -140,10 +140,10 @@ pipeline {
                                 ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
                             """,
                             returnStdout: true
-                        )
+                        ).trim()
                         
                         // Extract pull request number from the response
-                        def pullRequestNumber = readJSON text: response.trim()
+                        def pullRequestNumber = readJSON text: response
                         echo "Pull request created: ${GITHUB_REPO}/pull/${pullRequestNumber.number}"
                         
                         // Record pull request number for further use
@@ -253,8 +253,8 @@ def getPullRequests() {
     def response = httpRequest(
         url: "${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls",
         authentication: 'BASIC',
-        username: GITHUB_USERNAME,
-        password: GITHUB_PASSWORD
+        username: USERNAME,
+        password: PASSWORD
     )
 
     return readJSON text: response.content
