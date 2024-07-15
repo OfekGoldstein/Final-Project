@@ -40,7 +40,7 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE = 'ofekgoldstein/final-project'
+        DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project'
         PYTHONPATH = "${WORKSPACE}/App"
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
@@ -133,9 +133,8 @@ pipeline {
             steps {
                 container('docker') {
                     script {
-                        def dockerImage = "${DOCKER_IMAGE}:0.0.${BUILD_NUMBER}"
-                        sh "docker build -t ${dockerImage} -f App/Dockerfile ./App"
-                        //dockerImage = docker.build("${DOCKER_IMAGE}:0.0.${BUILD_NUMBER}", "--no-cache .")
+                        env.dockerImage = "${DOCKER_IMAGE_MAIN}:0.0.${BUILD_NUMBER}"
+                        sh "docker build -t ${env.dockerImage} -f App/Dockerfile ./App"
                     }
                 }
             }
@@ -152,7 +151,7 @@ pipeline {
                             // Push Docker image to Docker Hub with the new version
                             sh """
                             echo $PASSWORD | docker login -u $USERNAME --password-stdin
-                            docker push ${dockerImage}
+                            docker push ${env.dockerImage}
                             """
                         }
                     }
