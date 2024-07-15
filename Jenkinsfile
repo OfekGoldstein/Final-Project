@@ -136,6 +136,9 @@ pipeline {
                         
                         // Update DOCKER_IMAGE_MAIN environment variable with the new version
                         env.DOCKER_IMAGE_MAIN = "$DOCKERHUB_USERNAME/final-project:${newVersion}"
+                        
+                        // Pass newVersion to the next stage
+                        currentBuild.description = newVersion
                     }
                 }
             }
@@ -148,6 +151,9 @@ pipeline {
             steps {
                 container('git') {
                     script {
+                        // Retrieve newVersion from the previous stage
+                        def newVersion = currentBuild.description
+                        
                         // Configure git user
                         sh "git config --global user.email 'ofekgold16@gmail.com'"
                         sh "git config --global user.name 'OfekGoldstein'"
