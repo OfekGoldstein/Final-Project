@@ -133,7 +133,7 @@ pipeline {
             steps {
                 container('docker') {
                     script {
-                        def dockerImage = "${DOCKER_IMAGE}:0.0.${env.BUILD_NUMBER}"
+                        def dockerImage = "${DOCKER_IMAGE}:0.0.${BUILD_NUMBER}"
                         sh "docker build -t ${dockerImage} -f App/Dockerfile ./App"
                         //dockerImage = docker.build("${DOCKER_IMAGE}:0.0.${BUILD_NUMBER}", "--no-cache .")
                     }
