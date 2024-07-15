@@ -151,6 +151,7 @@ pipeline {
             steps {
                 container('git') {
                     script {
+                        withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         // Retrieve newVersion from the previous stage
                         def newVersion = currentBuild.description
                         
@@ -171,7 +172,7 @@ pipeline {
                         sh "git commit -m 'Increment version to ${newVersion}'"
                         
                         // Push to origin
-                        sh "git push origin main"
+                        sh "git push https://${USERNAME}:${PASSWORD}@github.com/${GITHUB_REPO}.git main"
                     }
                 }
             }
