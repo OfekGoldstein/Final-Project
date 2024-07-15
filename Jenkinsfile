@@ -143,7 +143,7 @@ pipeline {
                         )
                         
                         // Extract pull request number from the response
-                        def pullRequestNumber = readJSON text: response.toString()
+                        def pullRequestNumber = readJSON text: response.trim()
                         echo "Pull request created: ${GITHUB_REPO}/pull/${pullRequestNumber.number}"
                         
                         // Record pull request number for further use
