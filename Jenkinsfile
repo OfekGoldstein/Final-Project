@@ -31,11 +31,6 @@ pipeline {
                 command:
                 - cat
                 tty: true
-              - name: helm
-                image: alpine/helm:3.7.1
-                command:
-                - cat
-                tty: true
               volumes:
               - name: docker-socket
                 hostPath:
@@ -165,34 +160,21 @@ pipeline {
             }
         }
 
-        stage('Update Helm Chart') {
+        stage('increment Values Tag') {
             when {
                 branch 'main'
             }
             steps {
-                container('helm') {
-                    script {
-                        sh """
-                        git config --global user.email "ofekgold16@gmail.com"
-                        git config --global user.name "OfekGoldstein"
-                        git config --global --add safe.directory /home/jenkins/agent/workspace/final-project-pipeline_main
-                        cd final-project
-                        sed -i 's/version:.*/version: 1.0.${BUILD_NUMBER}/' Chart.yaml -i
-                        cd ..
-                        helm repo add final-project ${HELM_REPO_URL}
-                        helm repo update
-                        helm repo package final-project
-                        helm repo index --url charts/my-chart-1.1.0.tgz --merge index.yaml .
-                        helm repo update
-
-                        """
+                script{
+                    dir(final-project) {
+                        sh '''
+                        sed 's/tag:.*/tag 1.0.${BUILD_NUMBER}/' values.yaml -i
+                        '''
                     }
                 }
             }
         }
-    }
-
-
+        
     post {
         success {
             echo "Pipeline completed successfully."
