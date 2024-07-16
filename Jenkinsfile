@@ -182,6 +182,7 @@ pipeline {
                 }
             }
         }
+
         stage('Deploy to Kubernetes') {
             when {
                 branch 'main'
@@ -195,7 +196,6 @@ pipeline {
             }
         }
     }
-}
 
     post {
         success {
@@ -205,3 +205,4 @@ pipeline {
             echo "Pipeline failed."
         }
     }
+}
