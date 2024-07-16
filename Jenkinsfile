@@ -169,13 +169,14 @@ pipeline {
                 branch 'main'
             }
             steps {
-                container('helm') {
+                container('git') {
                     script {
                         sh """
                         cd final-project
+                        git checkout main
                         sed -i 's/tag:.*/tag: 1.0.${BUILD_NUMBER}/' values.yaml
-                        cd ..
-                        helm upgrade --install solarsystemapp ./final-project --values ./final-project/values.yaml
+                        git commit -a -m "modified values.yaml"
+                        git push origin main
                         """
                     }
                 }
