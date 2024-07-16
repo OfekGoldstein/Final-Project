@@ -45,6 +45,7 @@ pipeline {
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
         DOCKERHUB_USERNAME = 'ofekgoldstein'
+        BASE_VERSION = '0.1.0'
     }
 
     stages {
@@ -65,7 +66,7 @@ pipeline {
         
         stage('Clone Repository') {
             steps {
-                git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
+                git branch: 'feature', url: 'https://github.com/OfekGoldstein/Final-Project.git'
             }
         }
 
@@ -116,7 +117,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
-                        def branchName = "feature"      
+                        def branchName = "feature"
                         def pullRequestTitle = "Merge ${branchName} into main"
                         def pullRequestBody = "Automatically generated merge request for branch ${branchName}"
 
