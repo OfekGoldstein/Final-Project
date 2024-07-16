@@ -1,0 +1,19 @@
+apiVersion: v1
+entries:
+  my-chart:
+  - apiVersion: v1
+    created: "2024-07-16T00:00:00.000000Z"
+    description: A Helm chart for my application
+    digest: sha256:abcdef1234567890
+    name: my-chart
+    urls:
+    - charts/my-chart-1.0.0.tgz
+    version: 1.0.0
+  - apiVersion: v1
+    created: "2024-07-17T00:00:00.000000Z"
+    description: Updated version of my-chart
+    digest: sha256:1234567890abcdef
+    name: my-chart
+    urls:
+    - charts/my-chart-1.1.0.tgz
+    version: 1.1.0
