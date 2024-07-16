@@ -45,7 +45,6 @@ pipeline {
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
         DOCKERHUB_USERNAME = 'ofekgoldstein'
-        BASE_VERSION = '0.1.0'
     }
 
     stages {
