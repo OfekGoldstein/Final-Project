@@ -38,6 +38,7 @@ pipeline {
             """
         }
     }
+
     environment {
         DOCKER_IMAGE_MAIN = 'ofekgoldstein/final-project'
         PYTHONPATH = "${WORKSPACE}/App"
@@ -45,6 +46,7 @@ pipeline {
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
         DOCKERHUB_USERNAME = 'ofekgoldstein'
     }
+
     stages {
                 stage('Check Feature Branch') {
             steps {
@@ -66,7 +68,7 @@ pipeline {
                 git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
             }
         }
-        
+
         stage('Setup Environment') {
             when {
                 not {
@@ -87,7 +89,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Feature Branch Test') {
             when {
                 not {
@@ -104,7 +106,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Create Merge Request') {
             when {
                 not {
@@ -118,16 +120,27 @@ pipeline {
                         def pullRequestTitle = "Merge ${branchName} into main"
                         def pullRequestBody = "Automatically generated merge request for branch ${branchName}"
 
-                        sh """
-                            curl -X POST -u ${USERNAME}:${PASSWORD} \
-                            -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "${branchName}", "base": "main" }' \
-                            ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
-                        """
+                        // Create the pull request
+                        def response = sh (
+                            script: """
+                                curl -s -X POST -u ${USERNAME}:${PASSWORD} \
+                                -d '{ "title": "${pullRequestTitle}", "body": "${pullRequestBody}", "head": "${branchName}", "base": "main" }' \
+                                ${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls
+                            """,
+                            returnStdout: true
+                        ).trim()
+                        
+                        // Extract pull request number from the response
+                        def pullRequestNumber = readJSON text: response
+                        echo "Pull request created: ${GITHUB_REPO}/pull/${pullRequestNumber.number}"
+                        
+                        // Record pull request number for further use
+                        env.PULL_REQUEST_NUMBER = pullRequestNumber.number.toString()
                     }
                 }
             }
         }
-        
+
         stage('Main Branch Build') {
             when {
                 branch 'main'
@@ -135,66 +148,13 @@ pipeline {
             steps {
                 container('docker') {
                     script {
-                        // Read the current version
-                        def version = readFile('VERSION').trim()
-                        
-                        // Increment the version
-                        def (major, minor, patch) = version.tokenize('.')
-                        patch = (patch.toInteger() + 1).toString()
-                        def newVersion = "${major}.${minor}.${patch}"
-                        
-                        // Update the VERSION file with the new version
-                        writeFile(file: 'VERSION', text: newVersion)
-                        
-                        // Build Docker image with the new version
-                        def dockerImage = "${DOCKER_IMAGE_MAIN}:${newVersion}"
-                        sh "docker build -t ${dockerImage} -f App/Dockerfile ./App"
-                        
-                        // Update DOCKER_IMAGE_MAIN environment variable with the new version
-                        env.DOCKER_IMAGE = dockerImage
-                        
-                        // Pass newVersion to the next stage
-                        currentBuild.description = newVersion
+                        env.dockerImage = "${DOCKER_IMAGE_MAIN}:0.0.${BUILD_NUMBER}"
+                        sh "docker build -t ${env.dockerImage} -f App/Dockerfile ./App"
                     }
                 }
             }
         }
-        
-        stage('Git Operations') {
-            when {
-                branch 'main'
-            }
-            steps {
-                container('git') {
-                    script {
-                        withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        // Retrieve newVersion from the previous stage
-                        def newVersion = currentBuild.description
-                        
-                        // Configure git user
-                        sh "git config --global user.email 'ofekgold16@gmail.com'"
-                        sh "git config --global user.name 'OfekGoldstein'"
-                        
-                        // Add the workspace directory to safe directories
-                        sh "git config --global --add safe.directory ${WORKSPACE}"
-                        
-                        // Checkout the branch
-                        sh "git checkout main"
-                        
-                        // Add VERSION file
-                        sh "git add VERSION"
-                        
-                        // Commit the changes
-                        sh "git commit -m 'Increment version to ${newVersion}'"
-                        
-                        // Push to origin
-                        sh "git push https://${USERNAME}:${PASSWORD}@github.com/${GITHUB_REPO}.git main"
-                    }
-                }
-            }
-        }
-    }
-        
+
         stage('Push to Docker Hub') {
             when {
                 branch 'main'
@@ -203,9 +163,10 @@ pipeline {
                 container('docker') {
                     script {
                         withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                            // Push Docker image to Docker Hub with the new version
                             sh """
                             echo $PASSWORD | docker login -u $USERNAME --password-stdin
-                            docker push $DOCKER_IMAGE
+                            docker push ${env.dockerImage}
                             """
                         }
                     }
