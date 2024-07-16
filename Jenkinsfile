@@ -50,6 +50,7 @@ pipeline {
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
         DOCKERHUB_USERNAME = 'ofekgoldstein'
+        HELM_REPO_URL = 'https://github.com/OfekGoldstein/Final-Project/tree/main/final-project.git'
     }
 
     stages {
@@ -169,14 +170,16 @@ pipeline {
                 branch 'main'
             }
             steps {
-                container('git') {
+                container('helm') {
                     script {
                         sh """
                         cd final-project
-                        git checkout main
-                        sed -i 's/tag:.*/tag: 1.0.${BUILD_NUMBER}/' values.yaml
-                        git commit -a -m "modified values.yaml"
-                        git push origin main
+                        sed -i 's/version:.*/version: 1.0.${BUILD_NUMBER}/' Chart.yaml -i
+                        cd ..
+                        helm repo add final-project ${HELM_REPO_URL}
+                        helm repo update
+                        helm repo package final-project
+                        helm repo update
                         """
                     }
                 }

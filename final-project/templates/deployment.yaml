@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: {{ .Values.appName }}
-          image: "{{ .Values.deployment.repository.name }}/{{ .Values.deployment.repository.image }}:{{ .Values.deployment.repository.tag }}"
+          image: "{{ .Values.deployment.repository.name }}/{{ .Values.deployment.repository.image }}"
           ports:
             - containerPort: {{ .Values.service.port }}
           env:
