@@ -172,6 +172,7 @@ pipeline {
                 container('git') {
                     script {
                         sh """
+                        git config --global --add safe.directory /home/jenkins/agent/workspace/final-project-pipeline_main
                         cd final-project
                         sed -i 's/tag:.*/tag: 1.0.${BUILD_NUMBER}/' values.yaml
                         git commit -a -m "modified values.yaml"
