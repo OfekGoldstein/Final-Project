@@ -182,6 +182,7 @@ pipeline {
                         helm repo add final-project ${HELM_REPO_URL}
                         helm repo update
                         helm repo package final-project
+                        helm repo index --url charts/my-chart-1.1.0.tgz --merge index.yaml .
                         helm repo update
 
                         """
