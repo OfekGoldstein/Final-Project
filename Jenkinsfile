@@ -31,6 +31,11 @@ pipeline {
                 command:
                 - cat
                 tty: true
+              - name: helm
+                image: alpine/helm:3.7.1
+                command:
+                - cat
+                tty: true
               volumes:
               - name: docker-socket
                 hostPath:
