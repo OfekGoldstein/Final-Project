@@ -45,12 +45,28 @@ pipeline {
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
         DOCKERHUB_USERNAME = 'ofekgoldstein'
+        BASE_VERSION = '0.1.0'
     }
 
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'feature', url: 'https://github.com/OfekGoldstein/final-project.git'
+                git branch: 'feature', url: 'https://github.com/OfekGoldstein/Final-Project.git'
+            }
+        }
+
+        stage('Check Feature Branch') {
+            steps {
+                script {
+                    def featureBranchExists = sh(
+                        script: "git ls-remote origin refs/heads/feature | cut -f 1",
+                        returnStdout: true
+                    ).trim()
+                    if (featureBranchExists) {
+                        echo "New commits detected in the feature branch. Triggering feature pipeline..."
+                        build job: 'Feature Pipeline'  // Ensure 'Feature Pipeline' exists in Jenkins
+                    }
+                }
             }
         }
 
@@ -101,7 +117,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
-                        def branchName = "feature"      
+                        def branchName = "feature"
                         def pullRequestTitle = "Merge ${branchName} into main"
                         def pullRequestBody = "Automatically generated merge request for branch ${branchName}"
 
