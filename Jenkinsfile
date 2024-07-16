@@ -65,7 +65,7 @@ pipeline {
                 container('test') {
                     script {
                         dir('App') {
-                            sh 'apk add --no-cache procps'
+                            sh 'apt-get add --no-cache procps'
                             sh 'pip install --upgrade pip'
                             sh 'pip install pytest mongomock -r requirements.txt'
                         }
