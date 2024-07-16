@@ -165,18 +165,20 @@ pipeline {
             }
             steps {
                 script {
-                    sh """
-                    cd final-project
-                    sed -i 's/tag:.*/tag: 1.0.${BUILD_NUMBER}/' values.yaml
-                    """
-                    // Commit the changes to the repository (optional)
-                    sh """
-                    git config --global user.email "ofekgold16@gmail.com"
-                    git config --global user.name "OfekGoldstein"
-                    git add values.yaml
-                    git commit -m "Update image tag to 1.0.${BUILD_NUMBER}"
-                    git push origin main
-                    """
+                    dir('final-project') {
+                        // Navigate to the directory containing values.yaml
+                        sh """
+                        sed -i 's/tag:.*/tag: 1.0.${BUILD_NUMBER}/' values.yaml
+                        """
+                        // Commit the changes to the repository (optional)
+                        sh """
+                        git config --global user.email "ofekgold16@gmail.com"
+                        git config --global user.name "OfekGoldstein"
+                        git add values.yaml
+                        git commit -m "Update image tag to 1.0.${BUILD_NUMBER}"
+                        git push origin main
+                        """
+                    }
                 }
             }
         }
