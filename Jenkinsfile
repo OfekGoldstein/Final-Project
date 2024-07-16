@@ -176,6 +176,7 @@ pipeline {
                         git config --global user.name "OfekGoldstein"
                         git add values.yaml
                         git commit -m "Update image tag to 1.0.${BUILD_NUMBER}"
+                        git checkout main
                         git push origin main
                         """
                     }
