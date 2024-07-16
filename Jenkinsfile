@@ -169,30 +169,20 @@ pipeline {
                 branch 'main'
             }
             steps {
-                script {
-                    sh """
-                    cd final-project
-                    sed -i 's/tag:.*/tag: 1.0.${BUILD_NUMBER}/' values.yaml
-                    cd ..
-                    helm repo upgrade --install final-project ./final-project
-                    """
-                }
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            when {
-                branch 'main'
-            }
-            steps {
-                script {
-                    sh """
-                    helm upgrade --install solarsystemapp ./final-project --values ./final-project/values.yaml
-                    """
+                container('helm') {
+                    script {
+                        sh """
+                        cd final-project
+                        sed -i 's/tag:.*/tag: 1.0.${BUILD_NUMBER}/' values.yaml
+                        cd ..
+                        helm upgrade --install solarsystemapp ./final-project --values ./final-project/values.yaml
+                        """
+                    }
                 }
             }
         }
     }
+
 
     post {
         success {
