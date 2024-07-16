@@ -133,7 +133,7 @@ pipeline {
             steps {
                 container('docker') {
                     script {
-                        env.dockerImage = "${DOCKER_IMAGE_MAIN}:0.0.${BUILD_NUMBER}"
+                        env.dockerImage = "${DOCKER_IMAGE_MAIN}:1.0.${BUILD_NUMBER}"
                         sh "docker build -t ${env.dockerImage} -f App/Dockerfile ./App"
                     }
                 }
@@ -155,6 +155,20 @@ pipeline {
                             """
                         }
                     }
+                }
+            }
+        }
+
+        stage('Update Helm Chart') {
+            when {
+                branch 'main'
+            }
+            steps {
+                script {
+                    sh """
+                    cd final-project
+                    sed 's/tag:./tag: 1.0.${BUILD_NUMBER}/' values.yaml -i
+                    """
                 }
             }
         }
