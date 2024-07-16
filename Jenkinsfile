@@ -181,6 +181,9 @@ pipeline {
             }
         }
         stage('Deploy to Kubernetes') {
+            when {
+                branch 'main'
+            }
             steps {
                 script {
                     sh """
