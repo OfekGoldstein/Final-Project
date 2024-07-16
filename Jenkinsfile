@@ -55,21 +55,6 @@ pipeline {
             }
         }
 
-        stage('Check Feature Branch') {
-            steps {
-                script {
-                    def featureBranchExists = sh(
-                        script: "git ls-remote origin refs/heads/feature | cut -f 1",
-                        returnStdout: true
-                    ).trim()
-                    if (featureBranchExists) {
-                        echo "New commits detected in the feature branch. Triggering feature pipeline..."
-                        build job: 'Feature Pipeline'  // Ensure 'Feature Pipeline' exists in Jenkins
-                    }
-                }
-            }
-        }
-
         stage('Setup Environment') {
             when {
                 not {
