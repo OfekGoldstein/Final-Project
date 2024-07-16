@@ -173,6 +173,9 @@ pipeline {
                 container('helm') {
                     script {
                         sh """
+                        git config --global user.email "ofekgold16@gmail.com"
+                        git config --global user.name "OfekGoldstein"
+                        git config --global --add safe.directory /home/jenkins/agent/workspace/final-project-pipeline_main
                         cd final-project
                         sed -i 's/version:.*/version: 1.0.${BUILD_NUMBER}/' Chart.yaml -i
                         cd ..
@@ -180,6 +183,7 @@ pipeline {
                         helm repo update
                         helm repo package final-project
                         helm repo update
+
                         """
                     }
                 }
