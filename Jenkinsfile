@@ -65,9 +65,7 @@ pipeline {
                 container('test') {
                     script {
                         dir('App') {
-                            // Install necessary dependencies
-                            sh 'apt-get update'
-                            sh 'apt-get install -y procps'
+                            sh 'apk add --no-cache procps'
                             sh 'pip install --upgrade pip'
                             sh 'pip install pytest mongomock -r requirements.txt'
                         }
@@ -135,7 +133,7 @@ pipeline {
                 container('docker') {
                     script {
                         env.dockerImage = "${DOCKER_IMAGE_MAIN}:1.0.${BUILD_NUMBER}"
-                        sh "docker build -t ${env.dockerImage} -f App/Dockerfile ./App"
+                        sh "docker build -t ${env.dockerImage} -f App/Dockerfile ${WORKSPACE}/App"
                     }
                 }
             }
@@ -160,21 +158,22 @@ pipeline {
             }
         }
 
-        stage('increment Values Tag') {
+        stage('Increment Values Tag') {
             when {
                 branch 'main'
             }
             steps {
-                script{
-                    dir(final-project) {
+                script {
+                    dir('final-project') {
                         sh '''
-                        sed 's/tag:.*/tag 1.0.${BUILD_NUMBER}/' values.yaml -i
+                        sed -i 's/tag:.*/tag: 1.0.${BUILD_NUMBER}/' values.yaml
                         '''
                     }
                 }
             }
         }
-        
+    }
+
     post {
         success {
             echo "Pipeline completed successfully."
