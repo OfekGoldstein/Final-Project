@@ -178,8 +178,6 @@ pipeline {
                                 sed -i 's/tag:.*/tag: 1.0.${BUILD_NUMBER}/' values.yaml
                                 echo "New tag 1.0.${BUILD_NUMBER} written to values.yaml"
                                 cd ..
-                                git config user.email "ofekgold16@gmail.com"
-                                git config user.name "OfekGoldstein"
                                 git add values.yaml
                                 git commit -m "Modified values.yaml"
                                 git push https://${USERNAME}:${PASSWORD}@github.com/OfekGoldstein/Final-Project.git main
