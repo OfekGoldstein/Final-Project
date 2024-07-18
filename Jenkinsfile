@@ -31,11 +31,6 @@ pipeline {
                 command:
                 - cat
                 tty: true
-              - name: helm
-                image: alpine/helm:3.7.1
-                command:
-                - cat
-                tty: true
               volumes:
               - name: docker-socket
                 hostPath:
@@ -71,8 +66,7 @@ pipeline {
                     script {
                         dir('App') {
                             // Install necessary dependencies
-                            sh 'apt-get update'
-                            sh 'apt-get install -y procps'
+                            sh 'apt-get update && apt-get install -y procps'
                             sh 'pip install --upgrade pip'
                             sh 'pip install pytest mongomock -r requirements.txt'
                         }
@@ -165,33 +159,32 @@ pipeline {
             }
         }
 
-        stage('Update Helm Chart') {
+        stage('Increment Values Tag') {
             when {
                 branch 'main'
             }
             steps {
-                container('helm') {
-                    script {
-                        sh """
-                        git config --global user.email "ofekgold16@gmail.com"
-                        git config --global user.name "OfekGoldstein"
-                        git config --global --add safe.directory /home/jenkins/agent/workspace/final-project-pipeline_main
-                        cd final-project
-                        sed -i 's/version:.*/version: 1.0.${BUILD_NUMBER}/' Chart.yaml -i
-                        cd ..
-                        helm repo add final-project ${HELM_REPO_URL}
-                        helm repo update
-                        helm repo package final-project
-                        helm repo index --url charts/my-chart-1.1.0.tgz --merge index.yaml .
-                        helm repo update
-
-                        """
+                container('git') {
+                    withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        script{
+                            sh 'git clone https://github.com/OfekGoldstein/Final-Project.git final-project'
+                            dir('final-project') {
+                                sh '''
+                                sed -i 's/tag:.*/tag: 1.0.${BUILD_NUMBER}/' values.yaml
+                                echo "New tag 1.0.${BUILD_NUMBER} written to values.yaml"
+                                git config user.email "ofekgold16@gmail.com"
+                                git config user.name "OfekGoldstein"
+                                git add values.yaml
+                                git commit -m "Modified values.yaml"
+                                git push https://${USERNAME}:${PASSWORD}@github.com/OfekGoldstein/Final-Project.git main
+                                '''
+                            }
+                        }
                     }
                 }
             }
         }
     }
-
 
     post {
         success {
