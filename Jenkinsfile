@@ -175,7 +175,8 @@ pipeline {
                             git branch: 'main', url: 'https://github.com/OfekGoldstein/Final-Project.git'
                             dir('final-project') {
                                 sh '''
-                                sed -i 's/tag:.*/tag: 1.0.${BUILD_NUMBER}/' values.yaml
+                                BUILD_NUMBER=${BUILD_NUMBER}
+                                sed -i "s/tag:.*/tag: 1.0.${BUILD_NUMBER}/" values.yaml
                                 echo "New tag 1.0.${BUILD_NUMBER} written to values.yaml"
                                 ls -l
                                 git config --global --add safe.directory /home/jenkins/agent/workspace/final-project-pipeline_main
