@@ -50,6 +50,11 @@ pipeline {
 
     stages {
         stage('Clone Repository') {
+            when {
+                not {
+                    branch 'main'
+                }
+            }
             steps {
                 git branch: 'feature', url: 'https://github.com/OfekGoldstein/Final-Project.git'
             }
@@ -167,13 +172,16 @@ pipeline {
                 container('git') {
                     withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         script{
-                            sh 'git clone https://github.com/OfekGoldstein/Final-Project.git final-project'
+                            git branch: 'main', url: 'https://github.com/OfekGoldstein/Final-Project.git'
                             dir('final-project') {
                                 sh '''
-                                sed -i 's/tag:.*/tag: 1.0.${BUILD_NUMBER}/' values.yaml
+                                BUILD_NUMBER=${BUILD_NUMBER}
+                                sed -i "s/tag:.*/tag: 1.0.${BUILD_NUMBER}/" values.yaml
                                 echo "New tag 1.0.${BUILD_NUMBER} written to values.yaml"
-                                git config user.email "ofekgold16@gmail.com"
-                                git config user.name "OfekGoldstein"
+                                ls -l
+                                git config --global --add safe.directory /home/jenkins/agent/workspace/final-project-pipeline_main
+                                git config --global user.email "ofekgold16@gmail.com"
+                                git config --global user.name "OfekGoldstein"
                                 git add values.yaml
                                 git commit -m "Modified values.yaml"
                                 git push https://${USERNAME}:${PASSWORD}@github.com/OfekGoldstein/Final-Project.git main
