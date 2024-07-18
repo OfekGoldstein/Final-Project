@@ -167,7 +167,7 @@ pipeline {
                 container('git') {
                     withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         script{
-                            sh 'git clone https://github.com/OfekGoldstein/Final-Project.git'
+                            git branch: 'main', url: 'https://github.com/OfekGoldstein/Final-Project.git'
                             dir('final-project') {
                                 sh '''
                                 sed -i 's/tag:.*/tag: 1.0.${BUILD_NUMBER}/' values.yaml
