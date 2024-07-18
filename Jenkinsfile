@@ -66,8 +66,7 @@ pipeline {
                     script {
                         dir('App') {
                             // Install necessary dependencies
-                            sh 'apt-get update'
-                            sh 'apt-get install -y procps'
+                            sh 'apt-get update && apt-get install -y procps'
                             sh 'pip install --upgrade pip'
                             sh 'pip install pytest mongomock -r requirements.txt'
                         }
@@ -160,30 +159,33 @@ pipeline {
             }
         }
 
-        stage('increment Values Tag') {
+        stage('Increment Values Tag') {
             when {
                 branch 'main'
             }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    script{
-                        sh 'git clone https://github.com/${GIT_REPO}.git final-project'
-                        dir(final-project) {
-                            sh '''
-                            sed -i 's/tag:.*/tag 1.0.${BUILD_NUMBER}/' values.yaml
-                            echo "New tag 1.0.${BUILD_NUMBER} written to values.yaml"
-                            git config user.email "ofekgold16@gmail.com"
-                            git config user.name "OfekGoldstein"
-                            git add values.yaml
-                            git commit -m "Modified values.yaml"
-                            git push https://${USERNAME}:${PASSWORD}@github.com/OfekGoldstein/Final-Project.git main
-                            '''
+                container('git') {
+                    withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        script{
+                            sh 'git clone https://github.com/OfekGoldstein/Final-Project.git final-project'
+                            dir('final-project') {
+                                sh '''
+                                sed -i 's/tag:.*/tag: 1.0.${BUILD_NUMBER}/' values.yaml
+                                echo "New tag 1.0.${BUILD_NUMBER} written to values.yaml"
+                                git config user.email "ofekgold16@gmail.com"
+                                git config user.name "OfekGoldstein"
+                                git add values.yaml
+                                git commit -m "Modified values.yaml"
+                                git push https://${USERNAME}:${PASSWORD}@github.com/OfekGoldstein/Final-Project.git main
+                                '''
+                            }
                         }
                     }
                 }
             }
         }
-        
+    }
+
     post {
         success {
             echo "Pipeline completed successfully."
