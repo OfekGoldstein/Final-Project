@@ -1,7 +1,5 @@
-lib/
 argocd-values.yaml
 general-info.txt
-pyvenv.cfg
 .env
 mongodb-conf.yaml
 .helmignore
