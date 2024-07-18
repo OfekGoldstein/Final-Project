@@ -203,11 +203,9 @@ pipeline {
                 branch 'main'
             }
             steps {
-                        script {
-                            def WebhookURL = "http://localhost:8081/api/webhook?project=default&application=solar-system-app"
-                            sh "curl - X POST '${WebhookURL}' -H 'Content-Type: application/json' -d '{}'"
-                        }
-                    }
+                script {
+                    def WebhookURL = "http://localhost:8081/api/webhook?project=default&application=solar-system-app"
+                    sh "curl -X POST '${WebhookURL}' -H 'Content-Type: application/json' -d '{}'"
                 }
             }
         }
