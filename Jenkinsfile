@@ -179,6 +179,8 @@ pipeline {
                                 echo "New tag 1.0.${BUILD_NUMBER} written to values.yaml"
                                 ls -l
                                 git config --global --add safe.directory /home/jenkins/agent/workspace/final-project-pipeline_main
+                                git config --global user.email "ofekgold16@gmail.com"
+                                git config --global user.name "OfekGoldstein"
                                 git add values.yaml
                                 git commit -m "Modified values.yaml"
                                 git push https://${USERNAME}:${PASSWORD}@github.com/OfekGoldstein/Final-Project.git main
