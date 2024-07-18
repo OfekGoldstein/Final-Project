@@ -31,11 +31,6 @@ pipeline {
                 command:
                 - cat
                 tty: true
-              - name: argocd
-                image: argoproj/argocd:v2.1.1
-                command:
-                - cat
-                tty: true
               volumes:
               - name: docker-socket
                 hostPath:
@@ -192,24 +187,6 @@ pipeline {
                                 git push https://${USERNAME}:${PASSWORD}@github.com/OfekGoldstein/Final-Project.git main
                                 '''
                             }
-                        }
-                    }
-                }
-            }
-        }
-
-        stage('ArgoCD Sync') {
-            when {
-                branch 'main'
-            }
-            steps {
-                container('argocd') {
-                    withCredentials([usernamePassword(credentialsId: 'argocd-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        script {
-                            sh '''
-                            argocd login ${ARGOCD_SERVER_URL} --username ${USERNAME} --password ${PASSWORD} --insecure
-                            argocd app sync your-app-name
-                            '''
                         }
                     }
                 }
