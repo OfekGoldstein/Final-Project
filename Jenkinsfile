@@ -31,11 +31,6 @@ pipeline {
                 command:
                 - cat
                 tty: true
-              - name: argocd
-                image: argoproj/argocd:v2.1.1
-                command:
-                - cat
-                tty: true
               volumes:
               - name: docker-socket
                 hostPath:
@@ -198,17 +193,6 @@ pipeline {
             }
         }
 
-        stage('ArgoCD Sync') {
-            when {
-                branch 'main'
-            }
-            steps {
-                script {
-                    def WebhookURL = "http://localhost:8081/api/webhook?project=default&application=solar-system-app"
-                    sh "curl -X POST '${WebhookURL}' -H 'Content-Type: application/json' -d '{}'"
-                }
-            }
-        }
     }
 
     post {
