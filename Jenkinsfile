@@ -31,6 +31,11 @@ pipeline {
                 command:
                 - cat
                 tty: true
+              - name: argocd
+                image: argoproj/argocd:v2.1.1
+                command:
+                - cat
+                tty: true
               volumes:
               - name: docker-socket
                 hostPath:
@@ -45,7 +50,7 @@ pipeline {
         GITHUB_API_URL = 'https://api.github.com'
         GITHUB_REPO = 'OfekGoldstein/Final-Project'
         DOCKERHUB_USERNAME = 'ofekgoldstein'
-        HELM_REPO_URL = 'https://github.com/OfekGoldstein/Final-Project/tree/main/final-project.git'
+        ARGOCD_SERVER_URL = 'localhost:8081'
     }
 
     stages {
@@ -187,6 +192,24 @@ pipeline {
                                 git push https://${USERNAME}:${PASSWORD}@github.com/OfekGoldstein/Final-Project.git main
                                 '''
                             }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('ArgoCD Sync') {
+            when {
+                branch 'main'
+            }
+            steps {
+                container('argocd') {
+                    withCredentials([usernamePassword(credentialsId: 'argocd-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        script {
+                            sh '''
+                            argocd login ${ARGOCD_SERVER_URL} --username ${USERNAME} --password ${PASSWORD} --insecure
+                            argocd app sync your-app-name
+                            '''
                         }
                     }
                 }
