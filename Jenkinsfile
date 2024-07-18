@@ -203,15 +203,9 @@ pipeline {
                 branch 'main'
             }
             steps {
-                container('argocd') {
-                    withCredentials([usernamePassword(credentialsId: 'argocd-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         script {
-                            sh '''
-                            set +x
-                            env
-                            argocd login ${ARGOCD_SERVER_URL} --username ${USERNAME} --password ${PASSWORD} --insecure
-                            argocd app sync your-app-name
-                            '''
+                            def WebhookURL = "http://localhost:8081/api/webhook?project=default&application=solar-system-app"
+                            sh "curl - X POST '${WebhookURL}' -H 'Content-Type: application/json' -d '{}'"
                         }
                     }
                 }
