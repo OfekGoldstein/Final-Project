@@ -6,7 +6,7 @@ service:
   port: 5000
 
 deployment:
-  replicas: 3
+  replicas: 2
   repository:
     name: ofekgoldstein
     image: final-project
