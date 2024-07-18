@@ -50,6 +50,11 @@ pipeline {
 
     stages {
         stage('Clone Repository') {
+            when {
+                not {
+                    branch 'main'
+                }
+            }
             steps {
                 git branch: 'feature', url: 'https://github.com/OfekGoldstein/Final-Project.git'
             }
