@@ -10,7 +10,7 @@ deployment:
   repository:
     name: ofekgoldstein
     image: final-project
-    tag: 1.0.88
+    tag: 1.0.89
 
 mongo:
   app_secret_key: zaza7531
