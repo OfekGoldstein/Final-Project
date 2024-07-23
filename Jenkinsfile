@@ -200,6 +200,7 @@ pipeline {
         }
         failure {
             echo "Pipeline failed."
+            cleanWs()
         }
     }
 }
