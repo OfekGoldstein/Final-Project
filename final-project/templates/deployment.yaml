@@ -20,8 +20,6 @@ spec:
             - containerPort: {{ .Values.service.port }}
           env:
             - name: APP_SECRET_KEY
-             # value: "zaza7531"
               value: "{{ .Values.mongo.app_secret_key}}"
             - name: MONGO_URI
-              #value: "mongodb://ofek:ofek2002@mongodb:27017/?authSource=Final-project"
               value: "{{ .Values.mongo.uri}}" 
