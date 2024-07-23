@@ -56,7 +56,7 @@ pipeline {
                 }
             }
             steps {
-                git branch: 'ffeature', url: 'https://github.com/OfekGoldstein/Final-Project.git'
+                git branch: 'feature', url: 'https://github.com/OfekGoldstein/Final-Project.git'
             }
         }
 
