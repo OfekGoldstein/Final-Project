@@ -14,7 +14,4 @@ deployment:
 
 mongo:
   app_secret_key: zaza7531
-  username: ofek
-  password: ofek2002
-  service: mongodb
-  database: Final-project
+  uri: mongodb://ofek:ofek2002@mongodb:27017/?authSource=Final-project
