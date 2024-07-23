@@ -22,4 +22,4 @@ spec:
             - name: APP_SECRET_KEY
               value: "{{ .Values.mongo.app_secret_key}}"
             - name: MONGO_URI
-              value: "{{ .Values.mongo.uri}}" 
+              value: "{{ .Values.mongo.uri}}"
