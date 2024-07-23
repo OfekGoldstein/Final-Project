@@ -10,11 +10,8 @@ deployment:
   repository:
     name: ofekgoldstein
     image: final-project
-    tag: 1.0.120
+    tag: 1.0.122
 
 mongo:
   app_secret_key: zaza7531
-  username: ofek
-  password: ofek2002
-  service: mongodb
-  database: Final-project
+  uri: mongodb://ofek:ofek2002@mongodb:27017/?authSource=Final-project
