@@ -78,7 +78,7 @@ def register():
         if existing_user:
             # Compare the provided hashed password with the stored hashed password
             if bcrypt.checkpw(password, existing_user['password']):
-                # Allow registration if the same username and password combination exists
+                # Don't allow registration if the same username and password combination exists
                 flash("Username and password combination already exists", 'error')
                 return redirect(url_for('register'))
 
