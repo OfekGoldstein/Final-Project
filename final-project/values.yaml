@@ -1,5 +1,5 @@
 apiVersion: v1
-appName: final-project
+appName: solar-system-app
 
 service:
   type: ClusterIP
